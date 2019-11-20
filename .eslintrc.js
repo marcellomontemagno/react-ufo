@@ -1,0 +1,1 @@
+module.exports = require('react-scv/config/eslint.dev.js')

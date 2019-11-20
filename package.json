@@ -1,0 +1,40 @@
+{
+  "name": "react-ufo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "🛸 UFO - Use fetch orderly 🛸",
+  "main": "./build/umd/umd.js",
+  "react-scv": {
+    "appBuildEntry": "src/app.js",
+    "umdBuildEntry": "src/module/index.js",
+    "html": {
+      "title": "react-ufo",
+      "description": "🛸 UFO - Use fetch orderly 🛸"
+    },
+    "devServer": {
+      "port": "4000"
+    }
+  },
+  "scripts": {
+    "build": "react-scv build:app && react-scv build:umd",
+    "build:app": "react-scv build:app",
+    "build:umd": "react-scv build:umd",
+    "start": "react-scv start",
+    "test": "react-scv test",
+    "test:debug": "node --inspect-brk ./node_modules/react-scv/bin/react-scv test --runInBand"
+  },
+  "keywords": [
+    "react",
+    "fetch",
+    "hook",
+    "abort"
+  ],
+  "devDependencies": {
+    "react-scv": "0.0.19",
+    "eslint-plugin-react-hooks": "2.3.0",
+    "react": "16.12.0",
+    "react-dom": "16.12.0"
+  },
+  "author": "Marcello Montemagno",
+  "license": "MIT"
+}
