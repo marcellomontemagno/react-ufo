@@ -42,8 +42,8 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 }
 
 /*
-const validateData = (promiseOrSuspend) => {
-  if (!promiseOrSuspend?.then && promiseOrSuspend !== "suspend") {
+const isThenable = (thenable) => {
+  if (!thenable?.then) {
     throw "react-ufo: your function needs to return a promise, did you forget to add a return statement?"
   }
 }
@@ -54,6 +54,7 @@ const getAbortController = () => {
   if (window.AbortController) {
     abortController = new window.AbortController()
   } else {
+    // eslint-disable-next-line no-console
     abortController = {abort: () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')}
   }
   return abortController

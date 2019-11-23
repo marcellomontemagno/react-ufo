@@ -1,1 +1,1 @@
-module.exports = require('react-scv/config/eslint.dev.js')
+module.exports = require('react-scv/config/eslint.prod.js')
