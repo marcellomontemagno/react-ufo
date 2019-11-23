@@ -20,7 +20,7 @@ Use the unstable version at your own risk.
 ## Examples
 
 If you want to invoke a remote API inside an event callback: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/FetchCallbackExample.js" target="_blank">Fetch Callback Example</a><br/>
-If you want to invoke a single API on mount/update: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/FetchEffectExamplele.js" target="_blank">Fetch Effect Examplele</a><br/>
+If you want to invoke a single API on mount/update: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/FetchEffectExample.js" target="_blank">Fetch Effect Examplele</a><br/>
 If you want to invoke multiple APIs depending on each other: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/CascadingFetchesExample.js" target="_blank">Cascading Fetches Example</a><br/>
 
 ## Dependencies

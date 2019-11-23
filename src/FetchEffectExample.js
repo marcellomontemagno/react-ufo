@@ -9,7 +9,7 @@ export const getTodo = async (id, signal) => {
 
 const Todo = ({id}) => {
 
-  //useFetch invokes a `fetch` on mount/update, furthermore it aborts the fetch signal on unmount
+  //useFetch invokes a fetcher on mount/update, furthermore it aborts the signal on unmount
   const [loadingTodo, todoError, todo] = useFetchEffect(useCallback((signal) => {
     return getTodo(id, signal)
   }, [id]))
