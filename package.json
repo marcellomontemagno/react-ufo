@@ -1,7 +1,6 @@
 {
   "name": "react-ufo",
-  "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "🛸 UFO - Use fetch orderly 🛸",
   "main": "./build/umd/umd.js",
   "react-scv": {
