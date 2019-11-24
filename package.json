@@ -27,13 +27,15 @@
     "react",
     "fetch",
     "hook",
-    "abort"
+    "abort",
+    "suspense"
   ],
   "devDependencies": {
-    "react-scv": "0.0.19",
     "eslint-plugin-react-hooks": "2.3.0",
+    "lodash.debounce": "4.0.8",
     "react": "16.12.0",
-    "react-dom": "16.12.0"
+    "react-dom": "16.12.0",
+    "react-scv": "0.0.19"
   },
   "author": "Marcello Montemagno",
   "license": "MIT"

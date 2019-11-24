@@ -21,7 +21,7 @@ const Container = ({todoId}) => {
       //if we dont write `awaitResource(todoResource)` useFetchEffect will invoke getUser with userId = undefined
       const todo = awaitResource(todoResource)
       return getUser(todo.userId, signal)
-    }, [...todoResource]
+    }, [todoResource]
   ))
 
   return <Todo

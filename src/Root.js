@@ -2,25 +2,26 @@ import React from 'react'
 import FetchEffectExample from './FetchEffectExample'
 import FetchCallbackExample from "./FetchCallbackExample"
 import CascadingFetchesExample from "./CascadingFetchesExample"
-import CascadingFetchesProblemExample from "./CascadingFetchesProblemExample"
+import DebounceFetchExample from "./DebounceFetchExample"
 
 const Root = () => {
   return <>
-    Basic example:
+    Fetch callback example:
     <br/>
     <FetchCallbackExample/>
     <br/><br/><br/>
-    Lifecycle example:
+    Fetch effect example:
     <br/>
     <FetchEffectExample/>
-    <br/><br/><br/>
-    Cascading fetches problem example:
-    <br/>
-    <CascadingFetchesProblemExample/>
     <br/><br/><br/>
     Cascading fetches example:
     <br/>
     <CascadingFetchesExample/>
+    <br/><br/><br/>
+    Debounce fetch example:
+    <br/>
+    <DebounceFetchExample/>
+    <br/><br/><br/>
   </>
 }
 

@@ -3,7 +3,7 @@ import useFetchCallback from "./module/useFetchCallback"
 
 //A fetcher function knows nothing about react, it fetches some data and returns a promise
 export const getTodo = async (id, signal) => {
-  const response = await fetch('http://slowwly.robertomurray.co.uk/delay/1000/url/https://jsonplaceholder.typicode.com/todos/' + id, {signal})
+  const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
   return response.json()
 }
 

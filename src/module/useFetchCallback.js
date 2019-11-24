@@ -1,4 +1,5 @@
 import {useState, useCallback} from 'react'
+import useSemanticMemo from "./useSemanticMemo"
 
 const defaultError = null
 const defaultData = null
@@ -10,6 +11,7 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
   const [error, setError] = useState(defaultError)
   const [data, setData] = useState(defaultData)
 
+  //todo abortion before fetch?
   //todo handle `this`
   const callback = useCallback(async (...args) => {
     const abortController = getAbortController()
@@ -37,7 +39,7 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
     }
   }, [fetcher])
 
-  return [loading, error, data, callback]
+  return useSemanticMemo(() => [loading, error, data, callback], [loading, error, data, callback])
 
 }
 
