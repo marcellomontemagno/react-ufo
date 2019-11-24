@@ -1,7 +1,7 @@
 {
   "name": "react-ufo",
   "version": "0.0.1",
-  "description": "🛸 UFO - Use fetch orderly 🛸",
+  "description": "🛸 UFO - Use fetch orderly - A small collection of react hooks to help you handle data fetching with no fuss 🛸",
   "main": "./build/umd/umd.js",
   "react-scv": {
     "appBuildEntry": "src/app.js",
@@ -22,6 +22,14 @@
     "test": "react-scv test",
     "test:debug": "node --inspect-brk ./node_modules/react-scv/bin/react-scv test --runInBand"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marcellomontemagno/react-ufo.git"
+  },
+  "bugs": {
+    "url": "https://github.com/marcellomontemagno/react-ufo/issues"
+  },
+  "homepage": "https://github.com/marcellomontemagno/react-ufo",
   "keywords": [
     "react",
     "fetch",
