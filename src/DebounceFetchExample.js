@@ -1,6 +1,6 @@
 import React, {useState, useRef, useEffect} from 'react'
 import debounce from 'lodash.debounce'
-import useFetchCallback from "./module/useFetchCallback"
+import {useFetchCallback} from "react-ufo"
 
 //A fetcher function knows nothing about react, it fetches some data and returns a promise
 export const getTodo = async (id, signal) => {

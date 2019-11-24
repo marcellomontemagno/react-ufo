@@ -10,7 +10,7 @@ const useAreDependenciesChanged = (deps) => {
     return true
   }
 
-  //todo if args length changes
+  //todo if args length changes?
   for (let i = 0; i < deps.length; i++) {
     const prev = prevDepsRef.current[i]
     const current = deps[i]

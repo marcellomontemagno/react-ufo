@@ -1,5 +1,5 @@
 import React from 'react'
-import useFetchCallback from "./module/useFetchCallback"
+import {useFetchCallback} from "react-ufo"
 
 //A fetcher function knows nothing about react, it fetches some data and returns a promise
 export const getTodo = async (id, signal) => {
@@ -24,7 +24,7 @@ const FetchCallbackExample = ({id = 1}) => {
     {error && "😵 An error occurred"}
     {todo && `🥂 Here your data: ${JSON.stringify(todo)}`}
     <br/>
-    - Disable the network in your dev tools to check what happens in case of an error
+    - You can play with your dev tools to check what happens when you have a network error or a slow connection
   </>
 
 }

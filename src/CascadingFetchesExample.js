@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react'
-import {awaitResource, useFetchEffect} from "./module"
+import {awaitResource, useFetchEffect} from "react-ufo"
 
 //A fetcher function knows nothing about react, it fetches some data and returns a promise
 const getTodo = async (id, signal) => {
@@ -17,8 +17,8 @@ const Container = ({todoId}) => {
 
   const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
   const userResource = useFetchEffect(useCallback((signal) => {
-      //we need to tell useFetchEffect retrieving the user that it needs to await for the todo so that user will appear as loading the whole time
-      //if we dont write `awaitResource(todoResource)` useFetchEffect will invoke getUser with userId = undefined
+      //we need to tell this useFetchEffect that it needs to await for the todo so that user will appear as loading while todo is not ready
+      //omitting `awaitResource(todoResource)` would result in an invocation of getUser before we can retrieve userId from the todo
       const todo = awaitResource(todoResource)
       return getUser(todo.userId, signal)
     }, [todoResource]
@@ -57,6 +57,7 @@ const CreatedBy = ({userResource}) => {
   </>
 }
 
+//this code is not needed it allows you to mount/unmount the example so you can see how the library handles it
 const CascadingFetchesExample = () => {
 
   const [todoVisible, setTodoVisible] = useState(false)
@@ -69,9 +70,8 @@ const CascadingFetchesExample = () => {
     <button onClick={toggleTodoVisibility}>Mount/unmount todo</button>
     <br/>
     {todoVisible && <Container todoId={10}/>}
-    - Disable the network in your dev tools to check what happens in case of an error
-    <br/>
-    - Unmount the todo component before the request is completed to see that the api call is aborted in your dev tools
+    - You can play with your dev tools to check what happens when you have a network error or a slow connection <br/>
+    - You can try to unmount the component before a request is completed to see what happens
   </>
 
 }
