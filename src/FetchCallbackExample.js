@@ -12,13 +12,26 @@ const FetchCallbackExample = ({id = 1}) => {
   //useFetchCallback gets a fetcher function and returns its state and a function to trigger the fetch
   const [loading, error, todo, fetchTodo] = useFetchCallback(getTodo)
 
-  const onButtonClick = () => {
+  /*
+  by default the abort signal is passed as last argument but you are free to adapt the api if needed:
+  const [loading, error, todo, fetchTodo] = useFetchCallback(useCallback((id, signal) => {
+    return getTodo(id, signal)
+  }, []))
+  */
+
+  const onFetchClick = () => {
     //you decide when to invoke the fetch
     fetchTodo(id)
   }
 
+  const onAbortClick = () => {
+    //you decide when to abort the fetch
+    fetchTodo.abort()
+  }
+
   return <>
-    <button onClick={onButtonClick}>Fetch</button>
+    <button onClick={onFetchClick}>Fetch</button>
+    <button onClick={onAbortClick}>Abort</button>
     <br/>
     {loading && "⏳ Loading..."}
     {error && "😵 An error occurred"}

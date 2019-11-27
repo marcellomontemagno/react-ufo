@@ -18,5 +18,4 @@ const useFetchEffect = (fn) => {
 
 }
 
-
 export default useFetchEffect
