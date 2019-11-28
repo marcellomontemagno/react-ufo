@@ -1,14 +1,12 @@
 import React, {useState, useCallback} from 'react'
 import {awaitResource, useFetchEffect} from "react-ufo"
 
-//A fetcher function knows nothing about react, it fetches some data and returns a promise
-const getTodo = async (id, signal) => {
+export const getTodo = async (id, signal) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
   return response.json()
 }
 
-//A fetcher function knows nothing about react, it fetches some data and returns a promise
-const getUser = async (id, signal) => {
+export const getUser = async (id, signal) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/users/' + id, {signal})
   return response.json()
 }
@@ -17,8 +15,6 @@ const Container = ({todoId}) => {
 
   const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
   const userResource = useFetchEffect(useCallback((signal) => {
-      //we need to tell this useFetchEffect that it needs to await for the todo so that user will appear as loading while todo is not ready
-      //omitting `awaitResource(todoResource)` would result in an invocation of getUser before we can retrieve userId from the todo
       const todo = awaitResource(todoResource)
       return getUser(todo.userId, signal)
     }, [todoResource]
@@ -31,7 +27,6 @@ const Container = ({todoId}) => {
 
 }
 
-//this code is completely unaware of the fetch logic and the dependencies between remote resources
 const Todo = ({todoResource, CreatedBy}) => {
   const [loading, error, todo] = todoResource
   const {completed, title} = todo || {}
@@ -45,7 +40,6 @@ const Todo = ({todoResource, CreatedBy}) => {
   </div>
 }
 
-//this code is completely unaware of the fetch logic and the dependencies between remote resources
 const CreatedBy = ({userResource}) => {
   const [loading, error, user] = userResource
   const {email} = user || {}
@@ -57,7 +51,6 @@ const CreatedBy = ({userResource}) => {
   </>
 }
 
-//this code is not needed it allows you to mount/unmount the example so you can see how the library handles it
 const CascadingFetchesExample = () => {
 
   const [todoVisible, setTodoVisible] = useState(false)

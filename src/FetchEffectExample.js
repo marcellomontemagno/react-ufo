@@ -1,7 +1,6 @@
 import React, {useState, useCallback} from 'react'
 import {useFetchEffect} from "react-ufo"
 
-//A fetcher function knows nothing about react, it fetches some data and returns a promise
 export const getTodo = async (id, signal) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
   return response.json()
@@ -9,7 +8,6 @@ export const getTodo = async (id, signal) => {
 
 const Todo = ({id}) => {
 
-  //useFetch invokes a fetcher on mount/update, furthermore it aborts the signal on unmount
   const [loadingTodo, todoError, todo] = useFetchEffect(useCallback((signal) => {
     return getTodo(id, signal)
   }, [id]))
@@ -28,7 +26,6 @@ const Todo = ({id}) => {
 
 }
 
-//this code is not needed it allows you to mount/unmount the example so you can see how the library handles it
 const FetchEffectExample = () => {
 
   const [todoVisible, setTodoVisible] = useState(false)

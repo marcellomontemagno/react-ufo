@@ -19,9 +19,11 @@ Use the unstable version at your own risk.
 
 ## Examples
 
-If you want to invoke a remote API inside an event callback: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/FetchCallbackExample.js" target="_blank">Fetch Callback Example</a><br/>
-If you want to invoke a single API on mount/update: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/FetchEffectExample.js" target="_blank">Fetch Effect Examplele</a><br/>
-If you want to invoke multiple APIs depending on each other: <a href="https://github.com/marcellomontemagno/react-ufo/blob/master/src/CascadingFetchesExample.js" target="_blank">Cascading Fetches Example</a><br/>
+If you want to invoke a remote API inside an event callback: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
+
+If you want to invoke a single API on mount/update: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
+
+If you want to invoke multiple APIs depending on each other: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
 
 ## Dependencies
 
