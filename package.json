@@ -38,6 +38,7 @@
     "suspense"
   ],
   "devDependencies": {
+    "@testing-library/react-hooks": "3.2.1",
     "eslint-plugin-react-hooks": "2.3.0",
     "lodash.debounce": "4.0.8",
     "react": "16.12.0",

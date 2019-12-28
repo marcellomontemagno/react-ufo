@@ -11,7 +11,9 @@ const FetchCallbackExample = ({id = 1}) => {
   const [loading, error, todo, fetchTodo] = useFetchCallback(getTodo)
 
   const onFetchClick = () => {
-    fetchTodo(id)
+    if (!loading) {
+      fetchTodo(id)
+    }
   }
 
   const onAbortClick = () => {

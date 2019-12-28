@@ -1,8 +1,9 @@
-import Suspend from "./Suspend"
-
 const awaitResource = ([loading, error, data]) => {
-  if (loading || error) {
-    throw Suspend
+  if (loading) {
+    throw {name: 'Suspend', cause: 'loading'}
+  }
+  if (error) {
+    throw {name: 'Suspend', cause: 'error'}
   }
   return data
 }

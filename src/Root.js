@@ -1,8 +1,8 @@
 import React from 'react'
-import FetchEffectExample from './FetchEffectExample'
-import FetchCallbackExample from "./FetchCallbackExample"
-import CascadingFetchesExample from "./CascadingFetchesExample"
-import DebounceFetchExample from "./DebounceFetchExample"
+import FetchEffectExample from './examples/FetchEffectExample'
+import FetchCallbackExample from "./examples/FetchCallbackExample"
+import CascadingFetchesExample from "./examples/CascadingFetchesExample"
+import DebounceFetchExample from "./examples/DebounceFetchExample"
 
 const Root = () => {
   return <>

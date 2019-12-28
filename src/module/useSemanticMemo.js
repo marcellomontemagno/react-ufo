@@ -27,7 +27,7 @@ const useAreDependenciesChanged = (deps) => {
 }
 
 //todo can I implement the same with useEffect but executing on first render and skipping the mount?
-const useSemanticMemo = (fn, deps = []) => {
+const useSemanticMemo = (fn, deps) => {
   const memo = useRef()
   if (useAreDependenciesChanged(deps)) {
     memo.current = fn()

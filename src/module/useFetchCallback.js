@@ -17,8 +17,9 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
     const abortController = getAbortController()
     callback.abort = () => {
       //tempting to move but needs to happen here to be in the same tick
-      setData(defaultData)
       setLoading(false)
+      setData(defaultData)
+      setError(defaultError)
       abortController.abort()
     }
     try {
@@ -27,10 +28,16 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
       setLoading(false)
     } catch (error) {
       const name = error?.name
+      const cause = error?.cause
       if (name !== 'AbortError' && name !== 'Suspend') {
+        setError(error)
+        setLoading(false)
+        setData(defaultData)
+      }
+      if (name === 'Suspend' && cause === 'error') {
         setData(defaultData)
         setLoading(false)
-        setError(error)
+        setError('A parent resource failed to fetch')
       }
     }
   }, [fetcher])
@@ -38,6 +45,9 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
   //prevents error if aborting before fetching
   if (!callback.abort) {
     callback.abort = () => {
+      if (!window.AbortController) {
+        warnAbortNotInEnv()
+      }
     }
   }
 
@@ -50,10 +60,12 @@ const getAbortController = () => {
   if (window.AbortController) {
     abortController = new window.AbortController()
   } else {
-    // eslint-disable-next-line no-console
-    abortController = {abort: () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')}
+    abortController = {abort: warnAbortNotInEnv}
   }
   return abortController
 }
+
+// eslint-disable-next-line no-console
+const warnAbortNotInEnv = () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')
 
 export default useFetchCallback
