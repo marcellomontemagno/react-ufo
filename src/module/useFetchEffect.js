@@ -5,7 +5,7 @@ const useFetchEffect = (fn) => {
 
   const resource = useFetchCallback(fn, {defaultLoading: true})
 
-  const [, , , callback] = resource
+  const {callback} = resource
 
   useEffect(() => {
     callback()

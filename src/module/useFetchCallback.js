@@ -1,43 +1,27 @@
 import {useState, useCallback} from 'react'
-import useSemanticMemo from "./useSemanticMemo"
-
-const defaultError = null
-const defaultData = null
+import createResource from "./createResource"
 
 const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
-  const [loading, setLoading] = useState(defaultLoading)
-  const [error, setError] = useState(defaultError)
-  const [data, setData] = useState(defaultData)
-
   const callback = useCallback(async (...args) => {
-    setLoading(true)
-    setData(defaultData)
-    setError(defaultError)
+    setResult(createResource({loading: true, error: null, data: null, callback}))
     const abortController = getAbortController()
     callback.abort = () => {
       //tempting to move but needs to happen here to be in the same tick
-      setLoading(false)
-      setData(defaultData)
-      setError(defaultError)
+      setResult(createResource({loading: false, error: null, data: null, callback}))
       abortController.abort()
     }
     try {
       const data = await fetcher(...args, abortController.signal)
-      setData(data)
-      setLoading(false)
+      setResult(createResource({loading: false, error: null, data, callback}))
     } catch (error) {
       const name = error?.name
       const cause = error?.cause
       if (name !== 'AbortError' && name !== 'Suspend') {
-        setError(error)
-        setLoading(false)
-        setData(defaultData)
+        setResult(createResource({loading: false, error, data: null, callback}))
       }
       if (name === 'Suspend' && cause === 'error') {
-        setData(defaultData)
-        setLoading(false)
-        setError('A parent resource failed to fetch')
+        setResult(createResource({loading: false, error: 'A parent resource failed to fetch', data: null, callback}))
       }
     }
   }, [fetcher])
@@ -51,20 +35,12 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
     }
   }
 
-  return useSemanticMemo(() => {
-    return {
-      loading,
-      error,
-      data,
-      callback,
-      [Symbol.iterator]: function* () {
-        yield this['loading']
-        yield this['error']
-        yield this['data']
-        yield this['callback']
-      }
-    }
-  }, [loading, error, data, callback])
+  const [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback}))
+
+  // makes callback change on result if fetcher changes (useEffect in useFetchEffect has only callback as dependency)
+  result.callback = callback
+
+  return result
 
 }
 
