@@ -51,7 +51,20 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
     }
   }
 
-  return useSemanticMemo(() => [loading, error, data, callback], [loading, error, data, callback])
+  return useSemanticMemo(() => {
+    return {
+      loading,
+      error,
+      data,
+      callback,
+      [Symbol.iterator]: function* () {
+        yield this['loading']
+        yield this['error']
+        yield this['data']
+        yield this['callback']
+      }
+    }
+  }, [loading, error, data, callback])
 
 }
 

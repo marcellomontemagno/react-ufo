@@ -19,8 +19,16 @@ describe(`useFetchCallback`, () => {
     hook = renderHook(() => useFetchCallback(fetcher)).result
   })
 
-  it(`returns loading:false, error: null, data: null, callback:fn`, () => {
+  it(`returns loading:false, error: null, data: null, callback:fn as iterable`, () => {
     const [loading, error, data, callback] = hook.current
+    expect(loading).toBe(false)
+    expect(error).toBe(null)
+    expect(data).toBe(null)
+    expect(typeof callback).toBe('function')
+  })
+
+  it(`returns loading:false, error: null, data: null, callback:fn as object`, () => {
+    const {loading, error, data, callback} = hook.current
     expect(loading).toBe(false)
     expect(error).toBe(null)
     expect(data).toBe(null)
