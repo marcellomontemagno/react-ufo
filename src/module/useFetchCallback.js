@@ -1,60 +1,51 @@
-import {useState, useCallback} from 'react'
+import {useCallback, useState} from 'react'
 import createResource from "./createResource"
 
 const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
-  const callback = useCallback(async (...args) => {
-    setResult(createResource({loading: true, error: null, data: null, callback}))
-    const abortController = getAbortController()
-    callback.abort = () => {
-      //tempting to move but needs to happen here to be in the same tick
-      setResult(createResource({loading: false, error: null, data: null, callback}))
-      abortController.abort()
-    }
+  let abortController = createAbortController()
+
+  let callback = async (...args) => {
+    abortController = createAbortController()
+    setResult((s) => createResource({...s, loading: true, error: null, data: null}))
     try {
       const data = await fetcher(...args, abortController.signal)
-      setResult(createResource({loading: false, error: null, data, callback}))
+      setResult((s) => createResource({...s, loading: false, error: null, data}))
     } catch (error) {
       const name = error?.name
       const cause = error?.cause
       if (name !== 'AbortError' && name !== 'Suspend') {
-        setResult(createResource({loading: false, error, data: null, callback}))
+        setResult((s) => createResource({...s, loading: false, error, data: null}))
       }
       if (name === 'Suspend' && cause === 'error') {
-        setResult(createResource({loading: false, error: 'A parent resource failed to fetch', data: null, callback}))
-      }
-    }
-  }, [fetcher])
-
-  //prevents error if aborting before fetching
-  if (!callback.abort) {
-    callback.abort = () => {
-      if (!window.AbortController) {
-        warnAbortNotInEnv()
+        setResult((s) => createResource({...s, loading: false, error: 'A parent resource failed to fetch', data: null}))
       }
     }
   }
 
-  const [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback}))
+  callback.abort = () => {
+    setResult((s) => createResource({...s, loading: false, error: null, data: null}))
+    abortController.abort()
+  }
 
-  // makes callback change on result if fetcher changes (useEffect in useFetchEffect has only callback as dependency)
+  callback = useCallback(callback, [fetcher])
+
+  let [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback}))
   result.callback = callback
 
   return result
 
 }
 
-const getAbortController = () => {
+const createAbortController = () => {
   let abortController
   if (window.AbortController) {
     abortController = new window.AbortController()
   } else {
-    abortController = {abort: warnAbortNotInEnv}
+    // eslint-disable-next-line no-console
+    abortController = {abort: () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')}
   }
   return abortController
 }
-
-// eslint-disable-next-line no-console
-const warnAbortNotInEnv = () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')
 
 export default useFetchCallback

@@ -72,7 +72,7 @@ describe(`useFetchEffect`, () => {
     describe(`invoking the callback after the fetcher is resolved`, () => {
 
       beforeEach(() => {
-        const [, , , callback] = hook.result.current
+        const {callback} = hook.result.current
         act(() => {
           callback()
         })
@@ -111,7 +111,7 @@ describe(`useFetchEffect`, () => {
     describe(`invoking the callback after the fetcher is rejected`, () => {
 
       beforeEach(() => {
-        const [, , , callback] = hook.result.current
+        const {callback} = hook.result.current
         act(() => {
           callback()
         })

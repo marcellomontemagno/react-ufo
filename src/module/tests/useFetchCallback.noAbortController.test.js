@@ -34,8 +34,10 @@ describe(`useFetchCallback`, () => {
     describe(`aborting the callback before invoking it`, () => {
 
       beforeEach(() => {
-        const [, , , callback] = hook.current
-        callback.abort()
+        const {callback} = hook.current
+        act(() => {
+          callback.abort()
+        })
       })
 
       it(`returns loading:false, error: null, data: null, callback:fn`, () => {
@@ -56,7 +58,7 @@ describe(`useFetchCallback`, () => {
     describe(`invoking the callback`, () => {
 
       beforeEach(() => {
-        const [, , , callback] = hook.current
+        const {callback} = hook.current
         act(() => {
           callback(1, 2, 3)
         })
@@ -77,7 +79,7 @@ describe(`useFetchCallback`, () => {
       describe(`aborting the callback while the fetcher is pending`, () => {
 
         beforeEach(() => {
-          const [, , , callback] = hook.current
+          const {callback} = hook.current
           act(() => {
             callback.abort()
           })
