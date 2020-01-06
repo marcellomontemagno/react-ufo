@@ -12,7 +12,7 @@
 
 `npm install --save react-ufo`
 
-`import {useFetchCallback, useFetchEffect, awaitResource} from "react-ufo"`
+`import {useFetchCallback, useFetchEffect} from "react-ufo"`
 
 ## Examples
 
@@ -59,9 +59,7 @@ This hook works exactly as `useFetchCallback` but also invokes `callback` on `co
 
 For further info about this API check this example: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
 
-### awaitResource
-
-`awaitResource` is handy when your request depends on another request. You might think that you don't need this API but handling this use case is more tricky than it looks.
+### Cascading fetches
 
 Let's say that you fetched a `todo` object containing a `userId` field and you want to use `userId` to fetch a `user` object.
 
@@ -88,9 +86,7 @@ This seems to be fine but there are quite a few missing pieces:
 1) until `todo` is loaded `userId` will be undefined, the `useFetchEffect` fetching the `user` is not aware of the loading state of the `todo`, all it knows is that it needs to trigger `getUser` anytime `userId` changes. This code would result in 2 invocations of `getUser` one with `userId` undefined and one with `userId` valued properly when the `todo` is loaded.
 2) what if the `useFetchEffect` fetching the `todo` fails? 
 
-You might think that fixing these 2 problems is as easy as putting an `if(loadingTodo){return ...}` and `if(todoError){return ...}` within your fetcher function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
-
-This is why `awaitResource` is provided.
+You might think that fixing these 2 problems is as easy as putting an `if(!loadingTodo){return ...}` and `if(todoError){return ...}` within your fetcher function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
  
 You can write the previous code as follow:
 
@@ -100,10 +96,10 @@ You can write the previous code as follow:
 
 const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
 
-const [loadingUser, userError, user] = useFetchEffect(useCallback((signal) => {
-    const todo = awaitResource(todoResource)
+const [loadingUser, userError, user] = useFetchEffect(useCallback(async (signal) => {
+    const todo = await todoResource.promise
     return getUser(todo.userId, signal)
-}, [todoResource]))
+}, [todoResource.promise]))
 
 ...
 
@@ -118,11 +114,7 @@ The following will automatically happen for you:
 For further info about this API check this example:  [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
 
 > **Note:**
-> `awaitResource` can only be used within a `fetcher` function.
-
-> **Note:**
-> It is possible to pass `todoResource` as a dependency of `useCallback` because `useFetchEffect` doesn't return a new instance of `todoResource` on every render. 
-> `useFetchEffect` returns a new instance of `todoResource` only if any of its `loading`, `error`, `data` or `callback` values changes. `useFetchCallback` has the same behaviour.
+> Do not pass the whole `todoResource` as a dependency of `useCallback`, at some point `todoResource` will be updated to `loading:false` causing the awaited code to run a second time (`getUser(todo.userId, signal` in this example)
 
 ## Package versioning
 

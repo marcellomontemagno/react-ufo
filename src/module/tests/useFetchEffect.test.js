@@ -18,6 +18,8 @@ describe(`useFetchEffect`, () => {
       })
     })
     hook = renderHook(() => useFetchEffect(fetcher))
+    //prevents the tests to fail for an unhandled rejection
+    hook.result.current.promise.catch(() => {})
   })
 
   it(`returns loading:true, error: null, data: null, callback:fn`, () => {

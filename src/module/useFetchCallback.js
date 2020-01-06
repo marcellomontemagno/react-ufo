@@ -1,24 +1,30 @@
 import {useCallback, useState} from 'react'
 import createResource from "./createResource"
 
+//todo this seems fine except the fact that resource.promise is error prone as dependency of useCallback
+//useCallback is here to stay
+//can this win over the suspense impl if the suspense impl does multiple unhandled rejections?
 const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   let abortController = createAbortController()
+  let resolve
+  let reject
+  let promise = new Promise((rs, rj)=>{
+    resolve = rs
+    reject = rj
+  })
 
   let callback = async (...args) => {
     abortController = createAbortController()
-    setResult((s) => createResource({...s, loading: true, error: null, data: null}))
+    setResult((s) => createResource({...s, loading: true, error: null, data: null, promise}))
     try {
       const data = await fetcher(...args, abortController.signal)
       setResult((s) => createResource({...s, loading: false, error: null, data}))
+      resolve(data)
     } catch (error) {
-      const name = error?.name
-      const cause = error?.cause
-      if (name !== 'AbortError' && name !== 'Suspend') {
+      if (error?.name !== 'AbortError') {
         setResult((s) => createResource({...s, loading: false, error, data: null}))
-      }
-      if (name === 'Suspend' && cause === 'error') {
-        setResult((s) => createResource({...s, loading: false, error: 'A parent resource failed to fetch', data: null}))
+        reject(error)
       }
     }
   }
@@ -30,7 +36,7 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   callback = useCallback(callback, [fetcher])
 
-  let [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback}))
+  let [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback, promise}))
   result.callback = callback
 
   return result

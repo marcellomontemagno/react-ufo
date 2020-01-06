@@ -17,6 +17,8 @@ describe(`useFetchCallback`, () => {
       })
     })
     hook = renderHook(() => useFetchCallback(fetcher)).result
+    //prevents the tests to fail for an unhandled rejection
+    hook.current.promise.catch(()=>{})
   })
 
   it(`returns loading:false, error: null, data: null, callback:fn as iterable`, () => {

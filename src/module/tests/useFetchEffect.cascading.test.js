@@ -1,5 +1,5 @@
 import {renderHook, act} from "@testing-library/react-hooks"
-import {awaitResource, useFetchEffect} from "../index"
+import {useFetchEffect} from "../index"
 import {useCallback} from "react"
 
 describe(`useFetchEffect, cascading`, () => {
@@ -30,10 +30,14 @@ describe(`useFetchEffect, cascading`, () => {
     })
     renderHook(() => {
       resource1 = useFetchEffect(fetcher1)
-      resource2 = useFetchEffect(useCallback((signal) => {
-        const resource1Data = awaitResource(resource1)
+      //prevents the tests to fail for an unhandled rejection
+      resource1.promise.catch(()=>{})
+      resource2 = useFetchEffect(useCallback(async (signal) => {
+        const resource1Data = await resource1.promise
         return fetcher2(resource1Data, signal)
-      }, [resource1]))
+      }, [resource1.promise]))
+      //prevents the tests to fail for an unhandled rejection
+      resource2.promise.catch(()=>{})
     })
   })
 
@@ -168,7 +172,7 @@ describe(`useFetchEffect, cascading`, () => {
       it(`"resource 2" appears in error`, () => {
         const [loading, error, data, callback] = resource2
         expect(loading).toBe(false)
-        expect(error).toBe("A parent resource failed to fetch")
+        expect(error).toBe(expectedError1)
         expect(data).toBe(null)
         expect(typeof callback).toBe('function')
       })

@@ -1,5 +1,5 @@
 import React, {useState, useCallback} from 'react'
-import {awaitResource, useFetchEffect} from "react-ufo"
+import {useFetchEffect} from "react-ufo"
 
 export const getTodo = async (id, signal) => {
   const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
@@ -14,10 +14,10 @@ export const getUser = async (id, signal) => {
 const Container = ({todoId}) => {
 
   const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
-  const userResource = useFetchEffect(useCallback((signal) => {
-      const todo = awaitResource(todoResource)
+  const userResource = useFetchEffect(useCallback(async (signal) => {
+      const todo = await todoResource.promise
       return getUser(todo.userId, signal)
-    }, [todoResource]
+    }, [todoResource.promise]
   ))
 
   return <Todo
