@@ -13,36 +13,42 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   let callback = async (...args) => {
     abortController = createAbortController()
-    setResource((s) => createResource({...s, loading: true, error: null, data: null}))
+    setRequestState({
+      resource: createResource({loading: true, error: null, data: null}),
+      promise
+    })
     try {
       const data = await fetcher(...args, abortController.signal)
-      setResource((s) => createResource({...s, loading: false, error: null, data}))
+      setRequestState((s) => ({...s, resource: createResource({loading: false, error: null, data})}))
       resolve(data)
     } catch (error) {
       if (error?.name !== 'AbortError') {
-        setResource((s) => createResource({...s, loading: false, error, data: null}))
+        setRequestState((s) => ({...s, resource: createResource({...s, loading: false, error, data: null})}))
         reject(error)
       }
     }
   }
 
   callback.abort = () => {
-    setResource((s) => createResource({...s, loading: false, error: null, data: null}))
+    setRequestState((s) => ({...s, resource: createResource({...s, loading: false, error: null, data: null})}))
     abortController.abort()
   }
 
   callback = useCallback(callback, [fetcher])
 
-  let [resource, setResource] = useState(createResource({
-    loading: defaultLoading,
-    error: null,
-    data: null,
+  let [requestState, setRequestState] = useState({
+    resource: createResource({
+      loading: defaultLoading,
+      error: null,
+      data: null
+    }),
     promise
-  }))
+  })
 
   let result = useRef([]).current
-  result[0] = resource
-  result[1] = callback
+  result[0] = requestState.resource
+  result[1] = requestState.promise
+  result[2] = callback
 
   return result
 
