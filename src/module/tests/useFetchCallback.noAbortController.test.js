@@ -24,7 +24,7 @@ describe(`useFetchCallback`, () => {
     })
 
     it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-      const [loading, error, data, callback] = hook.current
+      const [[loading, error, data], callback] = hook.current
       expect(loading).toBe(false)
       expect(error).toBe(null)
       expect(data).toBe(null)
@@ -34,14 +34,14 @@ describe(`useFetchCallback`, () => {
     describe(`aborting the callback before invoking it`, () => {
 
       beforeEach(() => {
-        const {callback} = hook.current
+        const [, callback] = hook.current
         act(() => {
           callback.abort()
         })
       })
 
       it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-        const [loading, error, data, callback] = hook.current
+        const [[loading, error, data], callback] = hook.current
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -58,14 +58,14 @@ describe(`useFetchCallback`, () => {
     describe(`invoking the callback`, () => {
 
       beforeEach(() => {
-        const {callback} = hook.current
+        const [, callback] = hook.current
         act(() => {
           callback(1, 2, 3)
         })
       })
 
       it(`returns loading:true, error: null, data: null, callback:fn`, () => {
-        const [loading, error, data, callback] = hook.current
+        const [[loading, error, data], callback] = hook.current
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -79,14 +79,14 @@ describe(`useFetchCallback`, () => {
       describe(`aborting the callback while the fetcher is pending`, () => {
 
         beforeEach(() => {
-          const {callback} = hook.current
+          const [, callback] = hook.current
           act(() => {
             callback.abort()
           })
         })
 
         it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-          const [loading, error, data, callback] = hook.current
+          const [[loading, error, data], callback] = hook.current
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(null)

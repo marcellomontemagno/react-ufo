@@ -3,9 +3,9 @@ import useFetchCallback from "./useFetchCallback"
 
 const useFetchEffect = (fn) => {
 
-  const resource = useFetchCallback(fn, {defaultLoading: true})
+  const result = useFetchCallback(fn, {defaultLoading: true})
 
-  const {callback} = resource
+  const [, callback] = result
 
   useEffect(() => {
     callback()
@@ -14,7 +14,7 @@ const useFetchEffect = (fn) => {
     }
   }, [callback])
 
-  return resource
+  return result
 
 }
 

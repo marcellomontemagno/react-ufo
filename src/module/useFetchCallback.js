@@ -1,43 +1,48 @@
-import {useCallback, useState} from 'react'
+import {useCallback, useRef, useState} from 'react'
 import createResource from "./createResource"
 
-//todo this seems fine except the fact that resource.promise is error prone as dependency of useCallback
-//useCallback is here to stay
-//can this win over the suspense impl if the suspense impl does multiple unhandled rejections?
 const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   let abortController = createAbortController()
   let resolve
   let reject
-  let promise = new Promise((rs, rj)=>{
+  let promise = new Promise((rs, rj) => {
     resolve = rs
     reject = rj
   })
 
   let callback = async (...args) => {
     abortController = createAbortController()
-    setResult((s) => createResource({...s, loading: true, error: null, data: null, promise}))
+    setResource((s) => createResource({...s, loading: true, error: null, data: null}))
     try {
       const data = await fetcher(...args, abortController.signal)
-      setResult((s) => createResource({...s, loading: false, error: null, data}))
+      setResource((s) => createResource({...s, loading: false, error: null, data}))
       resolve(data)
     } catch (error) {
       if (error?.name !== 'AbortError') {
-        setResult((s) => createResource({...s, loading: false, error, data: null}))
+        setResource((s) => createResource({...s, loading: false, error, data: null}))
         reject(error)
       }
     }
   }
 
   callback.abort = () => {
-    setResult((s) => createResource({...s, loading: false, error: null, data: null}))
+    setResource((s) => createResource({...s, loading: false, error: null, data: null}))
     abortController.abort()
   }
 
   callback = useCallback(callback, [fetcher])
 
-  let [result, setResult] = useState(createResource({loading: defaultLoading, error: null, data: null, callback, promise}))
-  result.callback = callback
+  let [resource, setResource] = useState(createResource({
+    loading: defaultLoading,
+    error: null,
+    data: null,
+    promise
+  }))
+
+  let result = useRef([]).current
+  result[0] = resource
+  result[1] = callback
 
   return result
 
