@@ -129,23 +129,21 @@ Both `useFetchCallback` and `useFetchEffect` return a `result` object shaped as 
 }
 ``` 
 
-both `result` and `resource` are also iterable, therefore, you can also destructure them in an array like follow
+both `result` and `resource` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow:
 
 ```
 const [[loading, error, data], callback, promise] = result
 ```
 
-if you find it convenient for renaming.
-
-When destructuring into an array you obviously need to rely on the order we specified, therefore you might need to write something like the following
+When destructuring into an array you obviously need to rely on the order we specified for each key, therefore, in case you don't want to extract all the fields from `result`, you might need to write something like the following:
 
 ```
 const [[loading, , data], , promise] = result
 ```
 
-in case you don't want to extract all the fields from `result`.
+Because `result` is an object, accessing its fields by key (e.g `const data = result.resource.data`) is going to work as expected too.
 
-Because `result` is an object accessing its fields by key or doing object destructuring is going to work as expected too. 
+Because `result` is an object, doing object destructuring is going to work as expected too. 
 
 > **Note:**
 > Even though `result` and `resource` are iterable they are not arrays, therefore something like `result[0]` or `result.resource[0]` is not going to work.   
