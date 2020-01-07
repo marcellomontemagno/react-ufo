@@ -28,7 +28,7 @@ If you want to invoke multiple APIs depending on each other: [![Edit CascadingFe
 
 `useFetchCallback` hook is handy when you need to start a request in an event callback such as `onClick`.
 
-You can declare `const [loading, error, data, callback] = useFetchCallback(fetcher)` within your functional component and then invoke `callback` within your event callback to start the `fetcher`. 
+You can declare `const [[loading, error, data], callback] = useFetchCallback(fetcher)` within your functional component and then invoke `callback` within your event callback to start the `fetcher`. 
 
 A `fetcher` function is a normal function returning a promise.
 
@@ -41,7 +41,7 @@ Any argument passed to `callback` will be passed to your `fetcher`.
 Your `fetcher` function will automatically receive an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) as the last argument, passing this signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) will enable you to abort the request when `callback.abort()` is invoked. 
 
 > **Note:**
-> do not create a new fetcher function on every render, useFetchCallback will re-initialize itself when a new fetcher instance is received. In case your fetcher depends on props you can use the `useCallback` hook to create a new fetcher only when the input props change. 
+> do not create a new `fetcher` function on every render, `useFetchCallback` will re-initialize itself when a new `fetcher` instance is received. In case your `fetcher` depends on props you can use the `useCallback` hook to create a new `fetcher` only when the input props change. 
 
 For further info about this API check this example: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
 
@@ -49,13 +49,13 @@ For further info about this API check this example: [![Edit FetchCallbackExample
 
 `useFetchEffect` hook is handy when you need to start a request on `componentDidMount`, and abort it on `componentWillUnmount`.
 
-`const [loading, error, data, callback] = useFetchEffect(fetcher)`
+`const [[loading, error, data], callback] = useFetchEffect(fetcher)`
 
-This hook works exactly as `useFetchCallback` but also invokes `callback` on `componentDidMount` and `callback.abort()` on `componentWillUnmount`.
+This hook works exactly as `useFetchCallback` but also invokes `callback` on `componentDidMount` and `callback.abort()` on `componentWillUnmount` for you.
 
 > **Note:**
-> do not create a new fetcher function on every render, useFetchEffect would detect that the fetcher is changed and invoke your fetcher on every render causing a loop.
-> In case your fetcher depends on props you can use the `useCallback` hook to create a new fetcher only when the input props change, this will enable you to fetch again on `componentDidUpdate` if needed.  
+> do not create a new `fetcher` function on every render, `useFetchEffect` would detect that the `fetcher` is changed and invoke your `fetcher` on every render causing a loop.
+> In case your `fetcher` depends on props you can use the `useCallback` hook to create a new `fetcher` only when the input props change, this will enable you to fetch again on `componentDidUpdate` if needed.  
 
 For further info about this API check this example: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
 
@@ -69,11 +69,11 @@ You would probably try to write something like this:
 
 ...
 
-const [loadingTodo, todoError, todo] = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
+const [[loadingTodo, todoError, todo]] = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
 
 const userId = todo && todo.userId
 
-const [loadingUser, userError, user] = useFetchEffect(useCallback((signal) => {
+const [[loadingUser, userError, user]] = useFetchEffect(useCallback((signal) => {
     return getUser(userId, signal)
 }, [userId]))
 
@@ -88,33 +88,67 @@ This seems to be fine but there are quite a few missing pieces:
 
 You might think that fixing these 2 problems is as easy as putting an `if(!loadingTodo){return ...}` and `if(todoError){return ...}` within your fetcher function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
  
-You can write the previous code as follow:
+Here how `react-ufo` allows you to solve the the problems previously mentioned:
 
 ```
 
 ...
 
-const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
+const todoFetch = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId])) 
 
-const [loadingUser, userError, user] = useFetchEffect(useCallback(async (signal) => {
-    const todo = await todoResource.promise
+const [[loadingUser, userError, user]] = useFetchEffect(useCallback(async (signal) => {
+    const todo = await todoFetch.promise
     return getUser(todo.userId, signal)
-}, [todoResource.promise]))
+}, [todoFetch.promise]))
 
 ...
 
 ```
 
-The following will automatically happen for you:
+The Following will automatically happen for you:
 
 - `return getUser(todo.userId, signal)` will not be invoked until `todo` is loaded
-- `loadingUser` will be `true` until both the `todo` and the `user` are loaded
+- `loadingUser` will not be `true` until both the `todo` and the `user` are loaded
 - if `todo` fails `user` will fail too (`userError` will be valued)
 
 For further info about this API check this example:  [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
 
+### What exactly are useFetchCallback and useFetchEffect returning?
+
+Both `useFetchCallback` and `useFetchEffect` return a `result` object shaped as follow:
+
+```
+{
+  resource: {
+    loading,
+    error,
+    data
+  },
+  callback,
+  promise
+}
+``` 
+
+both `result` and `resource` are also iterable, therefore, you can also destructure them in an array like follow
+
+```
+const [[loading, error, data], callback, promise] = result
+```
+
+if you find it convenient for renaming.
+
+When destructuring into an array you obviously need to rely on the order we specified, therefore you might need to write something like the following
+
+```
+const [[loading, , data], , promise] = result
+```
+
+in case you don't want to extract all the fields from `result`.
+
+Because `result` is an object accessing its fields by key or doing object destructuring is going to work as expected too. 
+
 > **Note:**
-> Do not pass the whole `todoResource` as a dependency of `useCallback`, at some point `todoResource` will be updated to `loading:false` causing the awaited code to run a second time (`getUser(todo.userId, signal` in this example)
+> Even though `result` and `resource` are iterable they are not arrays, therefore something like `result[0]` or `result.resource[0]` is not going to work.   
 
 ## Package versioning
 
