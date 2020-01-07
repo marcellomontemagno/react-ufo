@@ -23,7 +23,7 @@ describe(`useFetchEffect`, () => {
   })
 
   it(`returns loading:true, error: null, data: null, promise, callback:fn`, () => {
-    const [[loading, error, data], promise, callback] = hook.result.current
+    const [[loading, error, data], callback, promise] = hook.result.current
     expect(loading).toBe(true)
     expect(error).toBe(null)
     expect(data).toBe(null)
@@ -65,7 +65,7 @@ describe(`useFetchEffect`, () => {
     })
 
     it(`returns loading:false, error: null, data: expectedResult, promise, callback:fn`, () => {
-      const [[loading, error, data], promise, callback] = hook.result.current
+      const [[loading, error, data], callback, promise] = hook.result.current
       expect(loading).toBe(false)
       expect(error).toBe(null)
       expect(data).toBe(expectedResult)
@@ -83,7 +83,7 @@ describe(`useFetchEffect`, () => {
       })
 
       it(`allows you to refresh the data and returns loading:true, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], promise, callback] = hook.result.current
+        const [[loading, error, data], callback, promise] = hook.result.current
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -106,7 +106,7 @@ describe(`useFetchEffect`, () => {
     })
 
     it(`returns loading:false, error: expectedError, data: null, promise, callback:fn`, () => {
-      const [[loading, error, data], promise, callback] = hook.result.current
+      const [[loading, error, data], callback, promise] = hook.result.current
       expect(loading).toBe(false)
       expect(error).toBe(expectedError)
       expect(data).toBe(null)
@@ -124,7 +124,7 @@ describe(`useFetchEffect`, () => {
       })
 
       it(`allows you to retry and returns loading:true, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], promise, callback] = hook.result.current
+        const [[loading, error, data], callback, promise] = hook.result.current
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)

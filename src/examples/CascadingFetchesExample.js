@@ -13,11 +13,11 @@ export const getUser = async (id, signal) => {
 
 const Container = ({todoId}) => {
 
-  const todoResource = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
-  const userResource = useFetchEffect(useCallback(async (signal) => {
-      const todo = await todoResource.promise
+  const [todoResource, , todoPromise] = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
+  const [userResource] = useFetchEffect(useCallback(async (signal) => {
+      const todo = await todoPromise
       return getUser(todo.userId, signal)
-    }, [todoResource.promise]
+    }, [todoPromise]
   ))
 
   return <Todo

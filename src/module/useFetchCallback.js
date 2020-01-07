@@ -48,8 +48,8 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   let result = useRef(createResult()).current
   result.resource = requestState.resource
-  result.promise = requestState.promise
   result.callback = callback
+  result.promise = requestState.promise
 
   return result
 

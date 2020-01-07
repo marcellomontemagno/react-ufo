@@ -24,7 +24,7 @@ describe(`useFetchCallback`, () => {
     })
 
     it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-      const [[loading, error, data], promise, callback] = hook.current
+      const [[loading, error, data], callback, promise] = hook.current
       expect(loading).toBe(false)
       expect(error).toBe(null)
       expect(data).toBe(null)
@@ -42,7 +42,7 @@ describe(`useFetchCallback`, () => {
       })
 
       it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], promise, callback] = hook.current
+        const [[loading, error, data], callback, promise] = hook.current
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -67,7 +67,7 @@ describe(`useFetchCallback`, () => {
       })
 
       it(`returns loading:true, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], promise, callback] = hook.current
+        const [[loading, error, data], callback, promise] = hook.current
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -89,7 +89,7 @@ describe(`useFetchCallback`, () => {
         })
 
         it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-          const [[loading, error, data], promise, callback] = hook.current
+          const [[loading, error, data], callback, promise] = hook.current
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(null)

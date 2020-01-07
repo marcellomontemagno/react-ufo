@@ -34,7 +34,7 @@ const DebounceFetchExample = () => {
   const [searchTerm, setSearchTerm] = useState("")
 
   //useFetchCallback gets a fetcher function and returns its state and a function to trigger the fetch
-  const [loading, error, todo, fetchTodo] = useFetchCallback(getTodo)
+  const [[loading, error, todo], fetchTodo] = useFetchCallback(getTodo)
 
   const debouncedFetchTodoRef = useRacingDebounce(fetchTodo)
 

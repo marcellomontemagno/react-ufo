@@ -49,7 +49,7 @@ describe(`useFetchEffect, cascading`, () => {
     })
 
     it(`"resource 1" appears as loading`, () => {
-      const [[loading, error, data], promise, callback] = result1
+      const [[loading, error, data], callback, promise] = result1
       expect(loading).toBe(true)
       expect(error).toBe(null)
       expect(data).toBe(null)
@@ -58,7 +58,7 @@ describe(`useFetchEffect, cascading`, () => {
     })
 
     it(`"resource 2" appears as loading`, () => {
-      const [[loading, error, data], promise, callback] = result2
+      const [[loading, error, data], callback, promise] = result2
       expect(loading).toBe(true)
       expect(error).toBe(null)
       expect(data).toBe(null)
@@ -83,7 +83,7 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 1" appears as loaded`, () => {
-        const [[loading, error, data], promise, callback] = result1
+        const [[loading, error, data], callback, promise] = result1
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(expectedResult1)
@@ -92,7 +92,7 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 2" appears as loading`, () => {
-        const [[loading, error, data], promise, callback] = result2
+        const [[loading, error, data], callback, promise] = result2
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
@@ -111,7 +111,7 @@ describe(`useFetchEffect, cascading`, () => {
         })
 
         it(`"resource 1" appears as loaded`, () => {
-          const [[loading, error, data], promise, callback] = result1
+          const [[loading, error, data], callback, promise] = result1
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(expectedResult1)
@@ -120,7 +120,7 @@ describe(`useFetchEffect, cascading`, () => {
         })
 
         it(`"resource 2" appears as loaded`, () => {
-          const [[loading, error, data], promise, callback] = result2
+          const [[loading, error, data], callback, promise] = result2
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(expectedResult2)
@@ -141,7 +141,7 @@ describe(`useFetchEffect, cascading`, () => {
         })
 
         it(`"resource 2" appears in error`, () => {
-          const [[loading, error, data], promise, callback] = result2
+          const [[loading, error, data], callback, promise] = result2
           expect(loading).toBe(false)
           expect(error).toBe(expectedError2)
           expect(data).toBe(null)
@@ -169,7 +169,7 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 1" appears in error`, () => {
-        const [[loading, error, data], promise, callback] = result1
+        const [[loading, error, data], callback, promise] = result1
         expect(loading).toBe(false)
         expect(error).toBe(expectedError1)
         expect(data).toBe(null)
@@ -178,7 +178,7 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 2" appears in error`, () => {
-        const [[loading, error, data], promise, callback] = result2
+        const [[loading, error, data], callback, promise] = result2
         expect(loading).toBe(false)
         expect(error).toBe(expectedError1)
         expect(data).toBe(null)

@@ -1,12 +1,12 @@
-const createResult = ({resource, promise, callback} = {}) => {
+const createResult = ({resource, callback, promise} = {}) => {
   return {
     resource,
-    promise,
     callback,
+    promise,
     [Symbol.iterator]: function* () {
       yield this['resource']
-      yield this['promise']
       yield this['callback']
+      yield this['promise']
     }
   }
 }

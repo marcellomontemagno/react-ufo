@@ -8,7 +8,7 @@ export const getTodo = async (id, signal) => {
 
 const Todo = ({id}) => {
 
-  const [loadingTodo, todoError, todo] = useFetchEffect(useCallback((signal) => {
+  const [[loadingTodo, todoError, todo]] = useFetchEffect(useCallback((signal) => {
     return getTodo(id, signal)
   }, [id]))
 

@@ -8,7 +8,7 @@ export const getTodo = async (id, signal) => {
 
 const FetchCallbackExample = ({id = 1}) => {
 
-  const [loading, error, todo, fetchTodo] = useFetchCallback(getTodo)
+  const [[loading, error, todo], fetchTodo] = useFetchCallback(getTodo)
 
   const onFetchClick = () => {
     if (!loading) {
