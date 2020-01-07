@@ -1,5 +1,6 @@
 import {useCallback, useRef, useState} from 'react'
 import createResource from "./createResource"
+import createResult from "./createResult"
 
 const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
@@ -45,10 +46,10 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
     promise
   })
 
-  let result = useRef([]).current
-  result[0] = requestState.resource
-  result[1] = requestState.promise
-  result[2] = callback
+  let result = useRef(createResult()).current
+  result.resource = requestState.resource
+  result.promise = requestState.promise
+  result.callback = callback
 
   return result
 

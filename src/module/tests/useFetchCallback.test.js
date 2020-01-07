@@ -18,39 +18,42 @@ describe(`useFetchCallback`, () => {
     })
     hook = renderHook(() => useFetchCallback(fetcher)).result
     //prevents the tests to fail for an unhandled rejection
-    hook.current[1].catch(() => undefined)
+    hook.current.promise.catch(() => undefined)
   })
 
-  it(`returns loading:false, error: null, data: null, callback:fn as iterable`, () => {
-    const [[loading, error, data], , callback] = hook.current
+  it(`returns loading:false, error: null, data: null, promise, callback:fn as iterable`, () => {
+    const [[loading, error, data], promise, callback] = hook.current
     expect(loading).toBe(false)
     expect(error).toBe(null)
     expect(data).toBe(null)
+    expect(promise).toBeInstanceOf(Promise)
     expect(typeof callback).toBe('function')
   })
 
-  it(`returns loading:false, error: null, data: null, callback:fn as object`, () => {
-    const [[loading, error, data], , callback] = hook.current
+  it(`returns loading:false, error: null, data: null, promise, callback:fn as object`, () => {
+    const {resource: {loading, error, data}, promise, callback} = hook.current
     expect(loading).toBe(false)
     expect(error).toBe(null)
     expect(data).toBe(null)
+    expect(promise).toBeInstanceOf(Promise)
     expect(typeof callback).toBe('function')
   })
 
   describe(`aborting the callback before invoking it`, () => {
 
     beforeEach(() => {
-      const [, , callback] = hook.current
+      const {callback} = hook.current
       act(() => {
         callback.abort()
       })
     })
 
-    it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-      const [[loading, error, data], , callback] = hook.current
+    it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
+      const [[loading, error, data], promise, callback] = hook.current
       expect(loading).toBe(false)
       expect(error).toBe(null)
       expect(data).toBe(null)
+      expect(promise).toBeInstanceOf(Promise)
       expect(typeof callback).toBe('function')
     })
 
@@ -59,17 +62,18 @@ describe(`useFetchCallback`, () => {
   describe(`invoking the callback`, () => {
 
     beforeEach(() => {
-      const [, , callback] = hook.current
+      const {callback} = hook.current
       act(() => {
         callback(1, 2, 3)
       })
     })
 
-    it(`returns loading:true, error: null, data: null, callback:fn`, () => {
-      const [[loading, error, data], , callback] = hook.current
+    it(`returns loading:true, error: null, data: null, promise, callback:fn`, () => {
+      const [[loading, error, data], promise, callback] = hook.current
       expect(loading).toBe(true)
       expect(error).toBe(null)
       expect(data).toBe(null)
+      expect(promise).toBeInstanceOf(Promise)
       expect(typeof callback).toBe('function')
     })
 
@@ -81,17 +85,18 @@ describe(`useFetchCallback`, () => {
     describe(`aborting the callback while the fetcher is pending`, () => {
 
       beforeEach(() => {
-        const [, , callback] = hook.current
+        const {callback} = hook.current
         act(() => {
           callback.abort()
         })
       })
 
-      it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-        const [[loading, error, data], , callback] = hook.current
+      it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
+        const [[loading, error, data], promise, callback] = hook.current
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(null)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
@@ -107,28 +112,30 @@ describe(`useFetchCallback`, () => {
         })
       })
 
-      it(`returns loading:false, error: null, data: expectedResult, callback:fn`, () => {
-        const [[loading, error, data], , callback] = hook.current
+      it(`returns loading:false, error: null, data: expectedResult, promise, callback:fn`, () => {
+        const [[loading, error, data], promise, callback] = hook.current
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(expectedResult)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
       describe(`aborting the callback after the fetcher is resolved`, () => {
 
         beforeEach(() => {
-          const [, , callback] = hook.current
+          const {callback} = hook.current
           act(() => {
             callback.abort()
           })
         })
 
-        it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-          const [[loading, error, data], , callback] = hook.current
+        it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
+          const [[loading, error, data], promise, callback] = hook.current
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(null)
+          expect(promise).toBeInstanceOf(Promise)
           expect(typeof callback).toBe('function')
         })
 
@@ -146,28 +153,30 @@ describe(`useFetchCallback`, () => {
         })
       })
 
-      it(`returns loading:false, error: expectedError, data: null, callback:fn`, () => {
-        const [[loading, error, data], , callback] = hook.current
+      it(`returns loading:false, error: expectedError, data: null, promise, callback:fn`, () => {
+        const [[loading, error, data], promise, callback] = hook.current
         expect(loading).toBe(false)
         expect(error).toBe(expectedError)
         expect(data).toBe(null)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
       describe(`aborting the callback after the fetcher is rejected`, () => {
 
         beforeEach(() => {
-          const [, , callback] = hook.current
+          const {callback} = hook.current
           act(() => {
             callback.abort()
           })
         })
 
-        it(`returns loading:false, error: null, data: null, callback:fn`, () => {
-          const [[loading, error, data], , callback] = hook.current
+        it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
+          const [[loading, error, data], promise, callback] = hook.current
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(null)
+          expect(promise).toBeInstanceOf(Promise)
           expect(typeof callback).toBe('function')
         })
 

@@ -31,13 +31,13 @@ describe(`useFetchEffect, cascading`, () => {
     renderHook(() => {
       result1 = useFetchEffect(fetcher1)
       //prevents the tests to fail for an unhandled rejection
-      result1[1].catch(() => undefined)
+      result1.promise.catch(() => undefined)
       result2 = useFetchEffect(useCallback(async (signal) => {
-        const resource1Data = await result1[1]
+        const resource1Data = await result1.promise
         return fetcher2(resource1Data, signal)
-      }, [result1[1]]))
+      }, [result1.promise]))
       //prevents the tests to fail for an unhandled rejection
-      result2[1].catch(() => undefined)
+      result2.promise.catch(() => undefined)
     })
   })
 
@@ -49,18 +49,20 @@ describe(`useFetchEffect, cascading`, () => {
     })
 
     it(`"resource 1" appears as loading`, () => {
-      const [[loading, error, data], , callback] = result1
+      const [[loading, error, data], promise, callback] = result1
       expect(loading).toBe(true)
       expect(error).toBe(null)
       expect(data).toBe(null)
+      expect(promise).toBeInstanceOf(Promise)
       expect(typeof callback).toBe('function')
     })
 
     it(`"resource 2" appears as loading`, () => {
-      const [[loading, error, data], , callback] = result2
+      const [[loading, error, data], promise, callback] = result2
       expect(loading).toBe(true)
       expect(error).toBe(null)
       expect(data).toBe(null)
+      expect(promise).toBeInstanceOf(Promise)
       expect(typeof callback).toBe('function')
     })
 
@@ -81,18 +83,20 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 1" appears as loaded`, () => {
-        const [[loading, error, data], , callback] = result1
+        const [[loading, error, data], promise, callback] = result1
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(expectedResult1)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
       it(`"resource 2" appears as loading`, () => {
-        const [[loading, error, data], , callback] = result2
+        const [[loading, error, data], promise, callback] = result2
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
@@ -107,18 +111,20 @@ describe(`useFetchEffect, cascading`, () => {
         })
 
         it(`"resource 1" appears as loaded`, () => {
-          const [[loading, error, data], , callback] = result1
+          const [[loading, error, data], promise, callback] = result1
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(expectedResult1)
+          expect(promise).toBeInstanceOf(Promise)
           expect(typeof callback).toBe('function')
         })
 
         it(`"resource 2" appears as loaded`, () => {
-          const [[loading, error, data], , callback] = result2
+          const [[loading, error, data], promise, callback] = result2
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(expectedResult2)
+          expect(promise).toBeInstanceOf(Promise)
           expect(typeof callback).toBe('function')
         })
 
@@ -135,10 +141,11 @@ describe(`useFetchEffect, cascading`, () => {
         })
 
         it(`"resource 2" appears in error`, () => {
-          const [[loading, error, data], , callback] = result2
+          const [[loading, error, data], promise, callback] = result2
           expect(loading).toBe(false)
           expect(error).toBe(expectedError2)
           expect(data).toBe(null)
+          expect(promise).toBeInstanceOf(Promise)
           expect(typeof callback).toBe('function')
         })
 
@@ -162,18 +169,20 @@ describe(`useFetchEffect, cascading`, () => {
       })
 
       it(`"resource 1" appears in error`, () => {
-        const [[loading, error, data], , callback] = result1
+        const [[loading, error, data], promise, callback] = result1
         expect(loading).toBe(false)
         expect(error).toBe(expectedError1)
         expect(data).toBe(null)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
       it(`"resource 2" appears in error`, () => {
-        const [[loading, error, data], , callback] = result2
+        const [[loading, error, data], promise, callback] = result2
         expect(loading).toBe(false)
         expect(error).toBe(expectedError1)
         expect(data).toBe(null)
+        expect(promise).toBeInstanceOf(Promise)
         expect(typeof callback).toBe('function')
       })
 
