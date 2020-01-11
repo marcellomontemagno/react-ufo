@@ -33,6 +33,7 @@
   "keywords": [
     "react",
     "fetch",
+    "axios",
     "hook",
     "abort",
     "suspense"

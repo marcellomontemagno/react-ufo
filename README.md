@@ -16,11 +16,13 @@
 
 ## Examples
 
-If you want to invoke a remote API inside an event callback: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
+1) If you want to invoke a remote API inside an event callback: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
 
-If you want to invoke a single API on mount/update: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
+2) If you want to invoke a single API on mount/update: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
 
-If you want to invoke multiple APIs depending on each other: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
+3) If you want to invoke multiple APIs depending on each other: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
+
+4) If you use [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackaxiosexample-o2iff?fontsize=14&hidenavigation=1&theme=dark)
 
 ## APIs
 
@@ -32,18 +34,20 @@ You can declare `const [[loading, error, data], callback] = useFetchCallback(fet
 
 A `fetcher` function is a normal function returning a promise.
 
-This hook handles the UI state of a request for you (loading, error...), all you need to do is tell what to fetch providing a `fetcher` function.
+This hook takes care of updating `loading`, `error`, and `data` anytime the status of the `promise` returned by your `fetcher` changes.
 
 Any argument passed to `callback` will be passed to your `fetcher`.
 
 `useFetchCallback` also helps you to abort a pending request if needed.
 
-Your `fetcher` function will automatically receive an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) as the last argument, passing this signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) will enable you to abort the request when `callback.abort()` is invoked. 
-
+Your `fetcher` function will automatically receive an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) as the last argument, passing this signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) will enable you to abort the request when `callback.abort()` is invoked.
+ 
 > **Note:**
 > do not create a new `fetcher` function on every render, `useFetchCallback` will re-initialize itself when a new `fetcher` instance is received. In case your `fetcher` depends on props you can use the `useCallback` hook to create a new `fetcher` only when the input props change. 
 
 For further info about this API check this example: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
+
+If you are wondering how to support request abortion when using [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) you can find an example here: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackaxiosexample-o2iff?fontsize=14&hidenavigation=1&theme=dark)
 
 ### useFetchEffect
 
@@ -86,7 +90,9 @@ This seems to be fine but there are quite a few missing pieces:
 1) until `todo` is loaded `userId` will be undefined, the `useFetchEffect` fetching the `user` is not aware of the loading state of the `todo`, all it knows is that it needs to trigger `getUser` anytime `userId` changes. This code would result in 2 invocations of `getUser` one with `userId` undefined and one with `userId` valued properly when the `todo` is loaded.
 2) what if the `useFetchEffect` fetching the `todo` fails? 
 
-You might think that fixing these 2 problems is as easy as putting an `if(!loadingTodo){return ...}` and `if(todoError){return ...}` within your fetcher function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
+You might think that fixing these 2 problems is as easy as wrapping the `useFetchEffect` fetching the `user` within a condition checking the state of `todo` but hooks cannot be wrapped within conditions ([rules of hooks](https://reactjs.org/docs/hooks-rules.html)).
+
+Then you might think to add `if(!loadingTodo){return ...}` and `if(todoError){return ...}` within your `user` `fetcher` function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
  
 Here how `react-ufo` allows you to solve the the problems previously mentioned:
 
