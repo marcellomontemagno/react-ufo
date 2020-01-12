@@ -3,6 +3,7 @@ import FetchEffectExample from './examples/FetchEffectExample'
 import FetchCallbackExample from "./examples/FetchCallbackExample"
 import CascadingFetchesExample from "./examples/CascadingFetchesExample"
 import DebounceFetchExample from "./examples/DebounceFetchExample"
+import StaleRequestsExample from "./examples/StaleRequestsExample"
 
 const Root = () => {
   return <>
@@ -21,6 +22,10 @@ const Root = () => {
     Debounce fetch example:
     <br/>
     <DebounceFetchExample/>
+    <br/><br/><br/>
+    Stale requests example:
+    <br/>
+    <StaleRequestsExample/>
     <br/><br/><br/>
   </>
 }

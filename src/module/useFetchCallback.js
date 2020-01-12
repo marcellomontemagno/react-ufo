@@ -14,14 +14,19 @@ const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
 
   let callback = async (...args) => {
     abortController = createAbortController()
+    const {signal} = abortController
     setRequestState({
       resource: createResource({loading: true, error: null, data: null}),
       promise
     })
     try {
-      const data = await fetcher(...args, abortController.signal)
-      setRequestState((s) => ({...s, resource: createResource({loading: false, error: null, data})}))
-      resolve(data)
+      const data = await fetcher(...args, signal)
+      //todo this needs test coverage:
+      //you might not propagate the signal to fetch API but still abort it
+      if (!signal.aborted) {
+        setRequestState((s) => ({...s, resource: createResource({loading: false, error: null, data})}))
+        resolve(data)
+      }
     } catch (error) {
       if (error?.name !== 'AbortError') {
         setRequestState((s) => ({...s, resource: createResource({...s, loading: false, error, data: null})}))
