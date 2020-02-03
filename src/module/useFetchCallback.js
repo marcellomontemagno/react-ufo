@@ -6,25 +6,27 @@ import createAbortController from "./createAbortController"
 
 const useFetchCallback = (fetcher, initialState = {}) => {
 
-  let abortController = createAbortController()
+  const ignoredRef = useRef(false)
+  const abortControllerRef = useRef(createAbortController())
   const [requestState, setRequestState] = useRequestState(initialState)
 
   let callback = (...args) => {
-    abortController = createAbortController()
+    ignoredRef.current = false
+    abortControllerRef.current = createAbortController()
     const {promise, resolve, reject} = createControllablePromise()
-    const {signal} = abortController
+    const {signal} = abortControllerRef.current
     setRequestState({loading: true, error: null, data: null})
     fetcher(...args, signal).then((data) => {
       resolve(data)
       //gives the ability to set some state before loading is changed (useful in pessimistic update example)
       promise.then(() => {
-        if (!signal.aborted) {
+        if (!ignoredRef.current && !signal.aborted) {
           setRequestState({loading: false, error: null, data})
         }
       })
     }).catch((error) => {
       reject(error)
-      if (error?.name !== 'AbortError') {
+      if (error?.name !== 'AbortError' && !ignoredRef.current && !signal.aborted) {
         setRequestState({loading: false, error, data: null})
       }
     })
@@ -33,14 +35,18 @@ const useFetchCallback = (fetcher, initialState = {}) => {
 
   callback.abort = () => {
     setRequestState({loading: false, error: null, data: null})
-    abortController.abort()
+    abortControllerRef.current.abort()
+  }
+
+  callback.ignore = () => {
+    ignoredRef.current = true
   }
 
   const memoCallback = useCallback(callback, [fetcher])
 
   useEffect(() => {
     return () => {
-      memoCallback.abort()
+      memoCallback.ignore()
     }
   }, [memoCallback])
 

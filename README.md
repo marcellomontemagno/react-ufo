@@ -79,7 +79,7 @@ useEffect(()=>{
 },[callback])
 ```
 
-You don't have to worry about `callback` being a dependency of `useEffect`, `callback` will only change if your `fetcher` changes.
+You don't have to worry about passing `callback` as a dependency of `useEffect`, `callback` will only change if your `fetcher` changes.
 
 ### Fetching on mount/update with props
 
@@ -96,6 +96,14 @@ useEffect(()=>{
 this ensure that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
 
 Here a basic example showing how to use `useFetchCallback` during mount/update "********todo********"
+ 
+### Ignoring a pending request
+
+If your component is unmounted while one of its requests is still pending `useFetchCallback` will take care of ignoring its result avoiding an attempt to perform a `setState` on an unmounted component.
+
+`callback.ignore()` can be invoked if you need to ignore the result of a pending request.
+
+If a request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed.
  
 ### Aborting a pending request
 
@@ -116,9 +124,9 @@ const getTodo = async (id, signal) => {
 };
 ```
 
-If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be considered `stale`.
+If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be marked as ignored.
  
-`Stale` requests do not update the state (`loading`, `error`, `data`) once completed. 
+If a request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed. 
  
 Here an example showing how to abort a request "********todo********"
 
