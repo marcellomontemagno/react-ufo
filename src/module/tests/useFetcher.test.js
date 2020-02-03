@@ -103,6 +103,103 @@ describe(`useFetcher`, () => {
 
     })
 
+    describe(`invoking callback.ignore() while the fetcher is pending`, () => {
+
+      beforeEach(() => {
+        const {callback} = hook.result.current
+        act(() => {
+          callback.ignore()
+        })
+      })
+
+      describe(`after the fetcher is resolved`, () => {
+
+        const expectedResult = 'result'
+
+        beforeEach(async () => {
+          await act(async () => {
+            resolve(expectedResult)
+          })
+        })
+
+        it(`doesn't update the state (state is still loading:true, error: null, data: null)`, () => {
+          const [, [loading, error, data]] = hook.result.current
+          expect(loading).toBe(true)
+          expect(error).toBe(null)
+          expect(data).toBe(null)
+        })
+
+        describe(`invoking the callback again`, () => {
+
+          beforeEach(() => {
+            const {callback} = hook.result.current
+            act(() => {
+              callback(1, 2, 3).catch(() => undefined)
+            })
+          })
+
+          describe(`after the fetcher is resolved`, () => {
+
+            const expectedResult = 'result'
+
+            beforeEach(async () => {
+              await act(async () => {
+                resolve(expectedResult)
+              })
+            })
+
+            it(`returns loading:false, error: null, data: expectedResult`, () => {
+              const [, [loading, error, data]] = hook.result.current
+              expect(loading).toBe(false)
+              expect(error).toBe(null)
+              expect(data).toBe(expectedResult)
+            })
+
+          })
+
+          describe(`after the fetcher is rejected`, () => {
+
+            const expectedError = 'error'
+
+            beforeEach(async () => {
+              await act(async () => {
+                reject(expectedError)
+              })
+            })
+
+            it(`returns loading:false, error: expectedError, data: null`, () => {
+              const [, [loading, error, data]] = hook.result.current
+              expect(loading).toBe(false)
+              expect(error).toBe(expectedError)
+              expect(data).toBe(null)
+            })
+          })
+
+        })
+
+      })
+
+      describe(`after the fetcher is rejected`, () => {
+
+        const expectedError = 'error'
+
+        beforeEach(async () => {
+          await act(async () => {
+            reject(expectedError)
+          })
+        })
+
+        it(`doesn't update the state (state is still loading:true, error: null, data: null)`, () => {
+          const [, [loading, error, data]] = hook.result.current
+          expect(loading).toBe(true)
+          expect(error).toBe(null)
+          expect(data).toBe(null)
+        })
+
+      })
+
+    })
+
     describe(`resolving the fetcher`, () => {
 
       const expectedResult = 'result'
