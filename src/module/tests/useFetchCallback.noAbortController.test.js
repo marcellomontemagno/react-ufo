@@ -20,34 +20,23 @@ describe(`useFetchCallback`, () => {
           reject = rj
         })
       })
-      hook = renderHook(() => useFetchCallback(fetcher)).result
-    })
-
-    it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-      const [[loading, error, data], callback, promise] = hook.current
-      expect(loading).toBe(false)
-      expect(error).toBe(null)
-      expect(data).toBe(null)
-      expect(promise).toBeInstanceOf(Promise)
-      expect(typeof callback).toBe('function')
+      hook = renderHook(() => useFetchCallback(fetcher))
     })
 
     describe(`aborting the callback before invoking it`, () => {
 
       beforeEach(() => {
-        const {callback} = hook.current
+        const {callback} = hook.result.current
         act(() => {
           callback.abort()
         })
       })
 
-      it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], callback, promise] = hook.current
+      it(`returns loading:false, error: null, data: null`, () => {
+        const [, [loading, error, data]] = hook.result.current
         expect(loading).toBe(false)
         expect(error).toBe(null)
         expect(data).toBe(null)
-        expect(promise).toBeInstanceOf(Promise)
-        expect(typeof callback).toBe('function')
       })
 
       it(`warns the user that a polyfill is needed`, () => {
@@ -60,19 +49,17 @@ describe(`useFetchCallback`, () => {
     describe(`invoking the callback`, () => {
 
       beforeEach(() => {
-        const {callback} = hook.current
+        const {callback} = hook.result.current
         act(() => {
           callback(1, 2, 3)
         })
       })
 
-      it(`returns loading:true, error: null, data: null, promise, callback:fn`, () => {
-        const [[loading, error, data], callback, promise] = hook.current
+      it(`returns loading:true, error: null, data: null`, () => {
+        const [, [loading, error, data]] = hook.result.current
         expect(loading).toBe(true)
         expect(error).toBe(null)
         expect(data).toBe(null)
-        expect(promise).toBeInstanceOf(Promise)
-        expect(typeof callback).toBe('function')
       })
 
       it(`passes the arguments of the callback invocation and an abort signal to the fetcher`, () => {
@@ -82,19 +69,17 @@ describe(`useFetchCallback`, () => {
       describe(`aborting the callback while the fetcher is pending`, () => {
 
         beforeEach(() => {
-          const {callback} = hook.current
+          const {callback} = hook.result.current
           act(() => {
             callback.abort()
           })
         })
 
-        it(`returns loading:false, error: null, data: null, promise, callback:fn`, () => {
-          const [[loading, error, data], callback, promise] = hook.current
+        it(`returns loading:false, error: null, data: null`, () => {
+          const [, [loading, error, data]] = hook.result.current
           expect(loading).toBe(false)
           expect(error).toBe(null)
           expect(data).toBe(null)
-          expect(promise).toBeInstanceOf(Promise)
-          expect(typeof callback).toBe('function')
         })
 
         it(`warns the user that a polyfill is needed`, () => {

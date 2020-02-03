@@ -1,74 +1,56 @@
-import {useCallback, useRef, useState} from 'react'
-import createResource from "./createResource"
-import createResult from "./createResult"
+import {useCallback, useEffect, useRef} from 'react'
+import createIterableResult from "./createIterableResult"
+import useRequestState from "./useRequestState"
+import createControllablePromise from "./createControllablePromise"
+import createAbortController from "./createAbortController"
 
-const useFetchCallback = (fetcher, {defaultLoading = false} = {}) => {
+const useFetchCallback = (fetcher, initialState = {}) => {
 
   let abortController = createAbortController()
-  let resolve
-  let reject
-  let promise = new Promise((rs, rj) => {
-    resolve = rs
-    reject = rj
-  })
+  const [requestState, setRequestState] = useRequestState(initialState)
 
-  let callback = async (...args) => {
+  let callback = (...args) => {
     abortController = createAbortController()
+    const {promise, resolve, reject} = createControllablePromise()
     const {signal} = abortController
-    setRequestState({
-      resource: createResource({loading: true, error: null, data: null}),
-      promise
-    })
-    try {
-      const data = await fetcher(...args, signal)
-      //todo this needs test coverage:
-      //you might not propagate the signal to fetch API but still abort it
-      if (!signal.aborted) {
-        setRequestState((s) => ({...s, resource: createResource({loading: false, error: null, data})}))
-        resolve(data)
-      }
-    } catch (error) {
+    setRequestState({loading: true, error: null, data: null})
+    fetcher(...args, signal).then((data) => {
+      resolve(data)
+      //gives the ability to set some state before loading is changed (useful in pessimistic update example)
+      promise.then(() => {
+        if (!signal.aborted) {
+          setRequestState({loading: false, error: null, data})
+        }
+      })
+    }).catch((error) => {
+      reject(error)
       if (error?.name !== 'AbortError') {
-        setRequestState((s) => ({...s, resource: createResource({...s, loading: false, error, data: null})}))
-        reject(error)
+        setRequestState({loading: false, error, data: null})
       }
-    }
+    })
+    return promise
   }
 
   callback.abort = () => {
-    setRequestState((s) => ({...s, resource: createResource({...s, loading: false, error: null, data: null})}))
+    setRequestState({loading: false, error: null, data: null})
     abortController.abort()
   }
 
-  callback = useCallback(callback, [fetcher])
+  const memoCallback = useCallback(callback, [fetcher])
 
-  let [requestState, setRequestState] = useState({
-    resource: createResource({
-      loading: defaultLoading,
-      error: null,
-      data: null
-    }),
-    promise
-  })
+  useEffect(() => {
+    return () => {
+      memoCallback.abort()
+    }
+  }, [memoCallback])
 
-  let result = useRef(createResult()).current
-  result.resource = requestState.resource
-  result.callback = callback
-  result.promise = requestState.promise
+  let resultRef = useRef(createIterableResult())
+  resultRef.current.callback = memoCallback
+  resultRef.current.requestState = requestState
+  resultRef.current.setRequestState = setRequestState
 
-  return result
+  return resultRef.current
 
-}
-
-const createAbortController = () => {
-  let abortController
-  if (window.AbortController) {
-    abortController = new window.AbortController()
-  } else {
-    // eslint-disable-next-line no-console
-    abortController = {abort: () => console.warn('react-ufo: you invocation of `.abort()` will do nothing because no `window.AbortController` was detected in your environment')}
-  }
-  return abortController
 }
 
 export default useFetchCallback

@@ -1,55 +1,46 @@
-import React, {useState, useRef, useEffect} from 'react'
+import React, {useRef, useEffect, useState, useCallback} from 'react'
 import debounce from 'lodash.debounce'
 import {useFetchCallback} from "react-ufo"
 
-//A fetcher function knows nothing about react, it fetches some data and returns a promise
-export const getTodo = async (id, signal) => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
+export const getBooks = async (title, signal) => {
+  if (!title) return
+  const response = await fetch('http://openlibrary.org/search.json?title=' + title + '&limit=5', {signal})
   return response.json()
 }
 
-const useRacingDebounce = (fn) => {
-
-  const prevFnRef = useRef(null)
-  const fnRef = useRef(null)
-
+const useDebounce = (fn, mills = 500) => {
+  const ref = useRef(debounce(fn, mills))
   useEffect(() => {
-
-    const fnWrapper = (...args) => {
-      prevFnRef.current && prevFnRef.current.abort()
-      fn(...args)
-      prevFnRef.current = fn
-    }
-
-    fnRef.current = debounce(fnWrapper, 300)
-
-  }, [fn])
-
-  return fnRef
-
+    ref.current = debounce(fn, mills)
+  }, [fn, mills])
+  return ref.current
 }
 
 const DebounceFetchExample = () => {
 
-  const [searchTerm, setSearchTerm] = useState("")
+  const [books, setBooks] = useState()
+  const [fetchBooks, [loading, error]] = useFetchCallback(getBooks)
 
-  //useFetchCallback gets a fetcher function and returns its state and a function to trigger the fetch
-  const [[loading, error, todo], fetchTodo] = useFetchCallback(getTodo)
-
-  const debouncedFetchTodoRef = useRacingDebounce(fetchTodo)
+  const debouncedFetchBooks = useDebounce(
+    useCallback(async (bookTitle) => {
+      fetchBooks.abort()
+      const books = await fetchBooks(bookTitle)
+      setBooks(books)
+    }, [fetchBooks])
+  )
 
   const onSearchTermChange = (event) => {
-    const searchTerm = event.target.value
-    setSearchTerm(searchTerm)
-    debouncedFetchTodoRef.current(searchTerm)
+    const bookTitle = event.target.value
+    debouncedFetchBooks(bookTitle)
   }
 
   return <>
-    <input value={searchTerm} onChange={onSearchTermChange}/>
+    Search books by name: <br/>
+    <input placeholder="Book title" onChange={onSearchTermChange}/> {loading && " ⏳ Loading..."}
     <br/>
-    {loading && "⏳ Loading..."}
     {error && "😵 An error occurred"}
-    {todo && `🥂 Here your data: ${JSON.stringify(todo)}`}
+    {books?.docs.map((book => <div key={book.key}> - {book.title} by {book.author_name?.[0]}</div>))}
+    {books?.docs?.length === 0 && "😮 No result found"}
     <br/>
     - Disable the network in your dev tools to check what happens in case of an error
   </>

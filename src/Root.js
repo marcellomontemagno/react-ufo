@@ -3,29 +3,34 @@ import FetchEffectExample from './examples/FetchEffectExample'
 import FetchCallbackExample from "./examples/FetchCallbackExample"
 import CascadingFetchesExample from "./examples/CascadingFetchesExample"
 import DebounceFetchExample from "./examples/DebounceFetchExample"
-import StaleRequestsExample from "./examples/StaleRequestsExample"
+import PessimisticAndUpdatesExample from "./examples/PessimisticUpdatesExample"
+import CrudExample2 from "./examples/CrudExample"
 
 const Root = () => {
   return <>
-    Fetch callback example:
+    crud:
     <br/>
-    <FetchCallbackExample/>
+    <CrudExample2/>
     <br/><br/><br/>
-    Fetch effect example:
+    Pessimistic update example:
     <br/>
-    <FetchEffectExample/>
-    <br/><br/><br/>
-    Cascading fetches example:
-    <br/>
-    <CascadingFetchesExample/>
+    <PessimisticAndUpdatesExample/>
     <br/><br/><br/>
     Debounce fetch example:
     <br/>
     <DebounceFetchExample/>
     <br/><br/><br/>
-    Stale requests example:
+    Cascading fetches example:
     <br/>
-    <StaleRequestsExample/>
+    <CascadingFetchesExample/>
+    <br/><br/><br/>
+    Fetch callback example in effect:
+    <br/>
+    <FetchEffectExample/>
+    <br/><br/><br/>
+    Fetch callback example:
+    <br/>
+    <FetchCallbackExample/>
     <br/><br/><br/>
   </>
 }

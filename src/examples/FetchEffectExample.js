@@ -1,16 +1,20 @@
-import React, {useState, useCallback} from 'react'
-import {useFetchEffect} from "react-ufo"
+import React, {useState, useCallback, useEffect} from 'react'
+import {useFetchCallback} from "react-ufo"
 
-export const getTodo = async (id, signal) => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
-  return response.json()
+const api = {
+  getTodo: async (id, signal) => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
+    return response.json()
+  }
 }
 
 const Todo = ({id}) => {
 
-  const [[loadingTodo, todoError, todo]] = useFetchEffect(useCallback((signal) => {
-    return getTodo(id, signal)
-  }, [id]))
+  const [getTodo, [loadingTodo, todoError, todo]] = useFetchCallback(api.getTodo)
+
+  useEffect(() => {
+    getTodo(id).then(() => undefined)
+  }, [id, getTodo])
 
   if (loadingTodo) {
     return "⏳ Loading..."

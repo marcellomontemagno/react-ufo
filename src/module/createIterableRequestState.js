@@ -1,4 +1,4 @@
-const createResource = ({loading, error, data}) => {
+const createIterableRequestState = ({loading, error, data}) => {
   return {
     loading,
     error,
@@ -11,4 +11,4 @@ const createResource = ({loading, error, data}) => {
   }
 }
 
-export default createResource
+export default createIterableRequestState

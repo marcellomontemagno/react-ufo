@@ -1,24 +1,27 @@
-import React, {useState, useCallback} from 'react'
-import {useFetchEffect} from "react-ufo"
+import React, {useState, useCallback, useEffect} from 'react'
+import {useFetchCallback} from "react-ufo"
 
-export const getTodo = async (id, signal) => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
-  return response.json()
-}
-
-export const getUser = async (id, signal) => {
-  const response = await fetch('https://jsonplaceholder.typicode.com/users/' + id, {signal})
-  return response.json()
+const api = {
+  getTodo: async (id, signal) => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/todos/' + id, {signal})
+    return response.json()
+  },
+  getUser: async (id, signal) => {
+    const response = await fetch('https://jsonplaceholder.typicode.com/users/' + id, {signal})
+    return response.json()
+  }
 }
 
 const Container = ({todoId}) => {
 
-  const [todoResource, , todoPromise] = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
-  const [userResource] = useFetchEffect(useCallback(async (signal) => {
-      const todo = await todoPromise
-      return getUser(todo.userId, signal)
-    }, [todoPromise]
-  ))
+  const [todoResource, , getTodo] = useFetchCallback(api.getTodo, {loading: true})
+  const [userResource, , getUser] = useFetchCallback(api.getUser, {loading: true})
+
+  useEffect(() => {
+    getTodo(todoId).then((todo) => {
+      getUser(todo.userId)
+    })
+  }, [todoId, getTodo, getUser])
 
   return <Todo
     todoResource={todoResource}

@@ -5,168 +5,247 @@
   <br/>
   UFO - Use fetch orderly
   <br/>
-  react-ufo is a collection of react hooks to help you handle data fetching with no fuss
+  react-ufo helps you handle data fetching in react with no fuss
 </p>
 
+## Introduction
+
+When updating a UI with data retrieved form a remote server a lot of things can go wrong
+
+- you will need to handle `loading` and `error` state
+- you might have two or more requests depending on each others
+- you might want to abort pending requests in certain conditions
+- you might have to handle race conditions
+
+At a first sight these problem seems no big deal but things get out of control quite easily.
+
+Taking advantage of react hooks `react-ufo` helps you dealing with all this complexity.
+ 
 ## Installation
 
 `npm install --save react-ufo`
 
-`import {useFetchCallback, useFetchEffect} from "react-ufo"`
+`import {useFetchCallback} from "react-ufo"`
 
-## APIs
+## How to use
 
-### useFetchCallback
+### Basic usage
 
-`useFetchCallback` hook is handy when you need to start a request in an event callback such as `onClick`.
+`useFetchCallback` handles the state of a request for you and much more.
 
-You can declare `const [[loading, error, data], callback] = useFetchCallback(fetcher)` within your functional component and then invoke `callback` within your event callback to start the `fetcher`. 
+The minimal usage of `useFetchCallback` looks like the following:
 
-A `fetcher` function is a normal function returning a promise.
+`const [callback, [loading, error, data]] = useFetchCallback(fetcher)`
 
-This hook takes care of updating `loading`, `error`, and `data` anytime the status of the promise returned by your `fetcher` changes.
+A `fetcher` function is a normal function that fetches some data and returns a promise.
 
-Any argument passed to `callback` will be passed to your `fetcher`.
+Here an example of `fetcher` function: 
 
-`useFetchCallback` also helps you to abort a pending request if needed.
+```
+const getTodo = async (id) => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id);
+  return response.json();
+};
+```
+  
+When you want your request to start, all you need to do is to invoke `callback`, after doing so, `loading`, `error`, and `data` will be updated in accordance with the status of your request. 
 
-Your `fetcher` function will automatically receive an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) as the last argument, passing this signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) will enable you to abort the request when `callback.abort()` is invoked.
+Any argument you pass to `callback` will be passed to your `fetcher`.
 
-If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be considered `stale`. `Stale` requests do not update the state (`loading`, `error`, `data`) once completed. 
+> **Note:**
+> Do not create a new `fetcher` function on every render, `useFetchCallback` will create a new `callback` anytime a new `fetcher` instance is received. In case your `fetcher` depends on props simply pass them to `callback` and your fetcher will receive them.
+
+Here a basic example showing how to use `useFetchCallback` in an event callback such as `onClick` "********todo********"
+
+### Fetching on mount/update
+
+By default, before a request is started, `useFetchCallback` will return `loading=false`, `error=null`, `data=null`.
+
+Sometimes you might want your initial request state to be different.
+
+One example is if you plan to request your data on the component mount/update, in this case you might want your initial request state to have `loading=true`.
+    
+`useFetchCallback` can receive a second argument indicating the initial state before your request starts.
+
+Here how you override the default `loading` state to be `true`
+
+`const [callback, [loading, error, data]] = useFetchCallback(fetcher, {loading:true})`
+
+Now if you want your request to start on mount all you need to do is
+
+```
+useEffect(()=>{
+  callback()
+},[callback])
+```
+
+You don't have to worry about `callback` being a dependency of `useEffect`, `callback` will only change if your `fetcher` changes.
+
+### Fetching on mount/update with props
+
+Sometimes a `fetcher` might need some data in order to retrieve data, for example the `getTodo` presented earlier needs an `id` argument.
+
+Assuming `id` is a prop of your component all you need to do is
+
+```
+useEffect(()=>{
+  callback(id)
+},[id,callback])
+```
+
+this ensure that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
+
+Here a basic example showing how to use `useFetchCallback` during mount/update "********todo********"
  
-> **Note:**
-> do not create a new `fetcher` function on every render, `useFetchCallback` will re-initialize itself when a new `fetcher` instance is received. In case your `fetcher` depends on props you can use the `useCallback` hook to create a new `fetcher` only when the input props change. 
+### Aborting a pending request
 
-For further info about this API check this example: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
+`callback.abort()` can be invoked anytime you want to abort a pending request.
 
-If you are wondering how to support request abortion when using [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) you can find an example here: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackaxiosexample-o2iff?fontsize=14&hidenavigation=1&theme=dark)
+Unfortunately in order for `callback.abort()` to work properly there is some little more wiring that you'll need to do.
 
-### useFetchEffect
+`useFetchCallback` will take care of passing an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to your `fetcher` as its last argument.
 
-`useFetchEffect` hook is handy if you need to start a request on mount.
+In order for `callback.abort()` to work you'll need to pass the abort signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
-`const [[loading, error, data]] = useFetchEffect(fetcher)` 
+Here an example showing how to enable fetch abortion on the `getTodo` `fetcher` presented earlier
 
-In details `useFetchEffect` will: 
+```
+const getTodo = async (id, signal) => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id, {signal});
+  return response.json();
+};
+```
 
-- start your `fetcher` on `componentDidMount`
-- abort your `fetcher` on `componentWillUnmount`
+If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be considered `stale`.
+ 
+`Stale` requests do not update the state (`loading`, `error`, `data`) once completed. 
+ 
+Here an example showing how to abort a request "********todo********"
 
-If a new `fetcher` is provided `useFetchEffect` will first abort the previous `fetcher` and then start the new one
+Aborting a pending request is quite easy when using [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) but it can also be achieved if you are using other libraries such as [axios](https://www.npmjs.com/package/axios)
 
-> **Note:**
-> do not create a new `fetcher` function on every render, `useFetchEffect` would detect that the `fetcher` is changed and invoke your `fetcher` on every render causing a loop.
-> In case your `fetcher` depends on the component props you can use the `useCallback` hook to create a new `fetcher` only when the input props change, this will enable you to fetch again on `componentDidUpdate` if needed.  
-
-For further info about this API check this example: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
+If you are wondering how to abort a request started by [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) you can find an example "********todo********"
 
 ### Cascading fetches
 
+Sometimes 2 requests depend on each other.
+
 Let's say that you fetched a `todo` object containing a `userId` field and you want to use `userId` to fetch a `user` object.
 
-You would probably try to write something like this:
+Here how you can handle this use case:
 
 ```
 
 ...
 
-const [[loadingTodo, todoError, todo]] = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId]))
+const [fetchTodo, [loadingTodo, todoError, todo]] = useFetchCallback(todoFetcher)
+const [fetchUser, [loadingUser, userError, user]] = useFetchCallback(userFetcher)
 
-const userId = todo && todo.userId
-
-const [[loadingUser, userError, user]] = useFetchEffect(useCallback((signal) => {
-    return getUser(userId, signal)
-}, [userId]))
-
-...
-
-```
-
-This seems to be fine but there are quite a few missing pieces:
-
-1) until `todo` is loaded `userId` will be undefined, the `useFetchEffect` fetching the `user` is not aware of the loading state of the `todo`, all it knows is that it needs to trigger `getUser` anytime `userId` changes. This code would result in 2 invocations of `getUser` one with `userId` undefined and one with `userId` valued properly when the `todo` is loaded.
-2) what if the `useFetchEffect` fetching the `todo` fails? 
-
-You might think that fixing these 2 problems is as easy as wrapping the `useFetchEffect` fetching the `user` within a condition checking the state of `todo` but hooks cannot be wrapped within conditions ([rules of hooks](https://reactjs.org/docs/hooks-rules.html)).
-
-Then you might think to add `if(!loadingTodo){return ...}` and `if(todoError){return ...}` within your `user` `fetcher` function, but what value would you return? `useFetchEffect` expects the `fetcher` to return a promises so it can handle your ui state accordingly.
- 
-Here how `react-ufo` allows you to solve the the problems previously mentioned:
-
-```
-
-...
-
-const todoFetch = useFetchEffect(useCallback((signal) => getTodo(todoId, signal), [todoId])) 
-
-const [[loadingUser, userError, user]] = useFetchEffect(useCallback(async (signal) => {
-    const todo = await todoFetch.promise
-    return getUser(todo.userId, signal)
-}, [todoFetch.promise]))
+useEffect(()=>{
+  fetchTodo(todoId).then((todo)=>{
+    fetchUser(todo.userId)
+  })
+},[todoId, fetchTodo, fetchUser])
 
 ...
 
 ```
 
-The Following will automatically happen for you:
+Here the full example showing this use case "********todo********"
 
-- `return getUser(todo.userId, signal)` will not be invoked until `todo` is loaded
-- `loadingUser` will not be `true` until both the `todo` and the `user` are loaded
-- if `todo` fails `user` will fail too (`userError` will be valued)
+### Keeping state between fetches
 
-For further info about this API check this example:  [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
+By default `useFetchCallback` erases the `data` of a request anytime a new one is started.
 
-### What exactly are useFetchCallback and useFetchEffect returning?
+Most of the times this is what you want but there are cases where you want to keep the `data` visible to the user until new `data` are retrieved.  
 
-Both `useFetchCallback` and `useFetchEffect` return a `result` object shaped as follow:
+If you need to keep `data` between fetches you can simply use `useState` from react.
+
+Here an example showing how to keep `data` fetched on mount/update:
+
+```
+const [data, setData] = useState()
+const [callback, [loading, error]] = useFetchCallback(fetcher)
+
+useEffect(()=>{
+  callback().then((data)=>{
+    setData(data)
+  })
+},[id,callback])
+``` 
+
+### Debouncing requests
+
+Here an example showing one simple way to debounce requests "********todo********"
+
+### Mutating state
+
+Sometimes you might want to change your request state manually.
+
+One common scenario when this can happen is if your user decides to ignore and remove a request error message displayed on the screen.
+
+`useFetchCallback` provides you `setLoading`, `setError`, `setData` and `setRequestState` for you to handle these use cases.
+
+Here the full signature of `useFetchCallback`:
+
+```
+const [callback, [loading, error, data], setRequestState] = useFetchCallback(fetcher)
+const [setLoading, setError, setData] = setRequestState
+```
+
+`setLoading`, `setError`, `setData` and `setRequestState` should be self explanatory because they work exactly like the setState in `const [state, setState] = useState()`
+
+### What exactly is useFetchCallback returning?
+
+`useFetchCallback` returns a `result` object shaped as follow:
 
 ```
 {
-  resource: {
+  callback,
+  requestState: {
     loading,
     error,
     data
   },
-  callback,
-  promise
+  setRequestState: {
+    setLoading,
+    setError,
+    setData
+  }
 }
 ``` 
 
-both `result` and `resource` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow:
+`result`, `requestState` and `setRequestState` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow:
 
 ```
-const [[loading, error, data], callback, promise] = result
+const [callback, [loading, error, data], [setLoading, setError, setData]] = result
 ```
 
 When destructuring into an array you obviously need to rely on the order we specified for each key, therefore, in case you don't want to extract all the fields from `result`, you might need to write something like the following:
 
 ```
-const [[loading, , data], , promise] = result
+const [callback, [loading, , data], [, setError]] = result
 ```
 
-Because `result` is an object, accessing its fields by key (e.g `const data = result.resource.data`) is going to work as expected too.
+Because `result` is an object, accessing its fields by key (e.g `const data = result.requestState.data`) is going to work as expected too.
 
 Because `result` is an object, doing object destructuring is going to work as expected too. 
 
+Note that even though `setRequestState` contains `setLoading`, `setError`, `setData` it is a function and can be used to update `loading`, `error` and `data` in a single render.
+
 > **Note:**
-> Even though `result` and `resource` are iterable they are not arrays, therefore something like `result[0]` or `result.resource[0]` is not going to work.   
+> Even though `result`, `requestState` and `setRequestState` are iterable they are not arrays, therefore something like `result[0]` or `result.requestState[0]` is not going to work.   
 
 ## Examples
 
-1) If you want to invoke a remote API inside an event callback: [![Edit FetchCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackexample-bezg7?fontsize=14&hidenavigation=1&theme=dark)
-
-2) If you want to invoke a single API on mount/update: [![Edit FetchEffectExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetcheffectexample-hnnp8?fontsize=14&hidenavigation=1&theme=dark)
-
-3) If you want to invoke multiple APIs depending on each other: [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/ancient-frost-n9oyk?fontsize=14&hidenavigation=1&theme=dark)
-
-4) If you use [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) [![Edit CascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/fetchcallbackaxiosexample-o2iff?fontsize=14&hidenavigation=1&theme=dark)
+"********todo********"
 
 ## Package versioning
 
-Some breaking changes might be made between 0.x.x versions.
+Breaking changes might be made between 0.x.x versions.
 Starting from version 1.0.0 every breaking changes will result in a major version update.
-The [changelog](https://github.com/marcellomontemagno/react-ufo/releases) will give you details about the changes.
+The [changelog](https://github.com/marcellomontemagno/react-ufo/releases) will give you details about every change between versions.
   
 ## Dependencies
 
-This package has zero dependencies but in order to support fetches abortion you will need  <a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" target="_blank">AbortController</a> (or a polyfill such as <a href="https://www.npmjs.com/package/abortcontroller-polyfill" target="_blank">abortcontroller-polyfill</a>) in your environment
+This package has zero dependencies but in order to support fetches abortion you will need <a href="https://developer.mozilla.org/en-US/docs/Web/API/AbortController" target="_blank">AbortController</a> (or a polyfill such as <a href="https://www.npmjs.com/package/abortcontroller-polyfill" target="_blank">abortcontroller-polyfill</a>) in your environment
