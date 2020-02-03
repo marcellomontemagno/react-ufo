@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {useFetchCallback} from "react-ufo"
+import {useFetcher} from "react-ufo"
 import * as api from "./fakeBookApi"
 
 const emptyBook = {title: '', description: ''}
@@ -7,9 +7,9 @@ const emptyBook = {title: '', description: ''}
 const Example = () => {
 
   const [editId, setEditId] = useState()
-  const [readBooks, [fetching, fetchingError, books], [, , setBooks]] = useFetchCallback(api.readBooks, {loading: true})
-  const [createBook, [creating, creatingError], [, setCreatingError]] = useFetchCallback(api.createBook)
-  const [updateBook, [updating, updatingError], [, setUpdatingError]] = useFetchCallback(api.updateBook)
+  const [readBooks, [fetching, fetchingError, books], [, , setBooks]] = useFetcher(api.readBooks, {loading: true})
+  const [createBook, [creating, creatingError], [, setCreatingError]] = useFetcher(api.createBook)
+  const [updateBook, [updating, updatingError], [, setUpdatingError]] = useFetcher(api.updateBook)
   let [draftBook, setDraftBook] = useState(emptyBook)
 
   useEffect(() => {
@@ -109,7 +109,7 @@ const Example = () => {
 }
 
 const BookDelete = ({bookId, onBookDelete}) => {
-  const [deleteBook, [deleting, deletingError], [, setDeletingError]] = useFetchCallback(api.deleteBook)
+  const [deleteBook, [deleting, deletingError], [, setDeletingError]] = useFetcher(api.deleteBook)
   const onDeleteClick = async () => {
     const book = await deleteBook(bookId)
     onBookDelete(book)

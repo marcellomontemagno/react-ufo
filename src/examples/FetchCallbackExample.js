@@ -1,5 +1,5 @@
 import React from 'react'
-import {useFetchCallback} from "react-ufo"
+import {useFetcher} from "react-ufo"
 
 const api = {
   getTodo: async (id, signal) => {
@@ -10,7 +10,7 @@ const api = {
 
 const FetchCallbackExample = ({id = 1}) => {
 
-  const [fetchTodo, [loading, error, todo]] = useFetchCallback(api.getTodo)
+  const [fetchTodo, [loading, error, todo]] = useFetcher(api.getTodo)
 
   const onFetchClick = () => {
     if (!loading) {

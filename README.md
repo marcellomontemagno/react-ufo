@@ -25,17 +25,17 @@ Taking advantage of react hooks `react-ufo` helps you dealing with all this comp
 
 `npm install --save react-ufo`
 
-`import {useFetchCallback} from "react-ufo"`
+`import {useFetcher} from "react-ufo"`
 
 ## How to use
 
 ### Basic usage
 
-`useFetchCallback` handles the state of a request for you and much more.
+`useFetcher` handles the state of a request for you and much more.
 
-The minimal usage of `useFetchCallback` looks like the following:
+The minimal usage of `useFetcher` looks like the following:
 
-`const [callback, [loading, error, data]] = useFetchCallback(fetcher)`
+`const [callback, [loading, error, data]] = useFetcher(fetcher)`
 
 A `fetcher` function is a normal function that fetches some data and returns a promise.
 
@@ -53,23 +53,23 @@ When you want your request to start, all you need to do is to invoke `callback`,
 Any argument you pass to `callback` will be passed to your `fetcher`.
 
 > **Note:**
-> Do not create a new `fetcher` function on every render, `useFetchCallback` will create a new `callback` anytime a new `fetcher` instance is received. In case your `fetcher` depends on props simply pass them to `callback` and your fetcher will receive them.
+> Do not create a new `fetcher` function on every render, `useFetcher` will create a new `callback` anytime a new `fetcher` instance is received. In case your `fetcher` depends on props simply pass them to `callback` and your fetcher will receive them.
 
-Here a basic example showing how to use `useFetchCallback` in an event callback such as `onClick` "********todo********"
+Here a basic example showing how to use `useFetcher` in an event callback such as `onClick` "********todo********"
 
 ### Fetching on mount/update
 
-By default, before a request is started, `useFetchCallback` will return `loading=false`, `error=null`, `data=null`.
+By default, before a request is started, `useFetcher` will return `loading=false`, `error=null`, `data=null`.
 
 Sometimes you might want your initial request state to be different.
 
 One example is if you plan to request your data on the component mount/update, in this case you might want your initial request state to have `loading=true`.
     
-`useFetchCallback` can receive a second argument indicating the initial state before your request starts.
+`useFetcher` can receive a second argument indicating the initial state before your request starts.
 
 Here how you override the default `loading` state to be `true`
 
-`const [callback, [loading, error, data]] = useFetchCallback(fetcher, {loading:true})`
+`const [callback, [loading, error, data]] = useFetcher(fetcher, {loading:true})`
 
 Now if you want your request to start on mount all you need to do is
 
@@ -95,11 +95,11 @@ useEffect(()=>{
 
 this ensure that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
 
-Here a basic example showing how to use `useFetchCallback` during mount/update "********todo********"
+Here a basic example showing how to use `useFetcher` during mount/update "********todo********"
  
 ### Ignoring a pending request
 
-If your component is unmounted while one of its requests is still pending `useFetchCallback` will take care of ignoring its result avoiding an attempt to perform a `setState` on an unmounted component.
+If your component is unmounted while one of its requests is still pending `useFetcher` will take care of ignoring its result avoiding an attempt to perform a `setState` on an unmounted component.
 
 `callback.ignore()` can be invoked if you need to ignore the result of a pending request.
 
@@ -111,7 +111,7 @@ If a request is marked as ignored `loading`, `error` and `data` will not be upda
 
 Unfortunately in order for `callback.abort()` to work properly there is some little more wiring that you'll need to do.
 
-`useFetchCallback` will take care of passing an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to your `fetcher` as its last argument.
+`useFetcher` will take care of passing an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to your `fetcher` as its last argument.
 
 In order for `callback.abort()` to work you'll need to pass the abort signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
@@ -146,8 +146,8 @@ Here how you can handle this use case:
 
 ...
 
-const [fetchTodo, [loadingTodo, todoError, todo]] = useFetchCallback(todoFetcher)
-const [fetchUser, [loadingUser, userError, user]] = useFetchCallback(userFetcher)
+const [fetchTodo, [loadingTodo, todoError, todo]] = useFetcher(todoFetcher)
+const [fetchUser, [loadingUser, userError, user]] = useFetcher(userFetcher)
 
 useEffect(()=>{
   fetchTodo(todoId).then((todo)=>{
@@ -163,7 +163,7 @@ Here the full example showing this use case "********todo********"
 
 ### Keeping state between fetches
 
-By default `useFetchCallback` erases the `data` of a request anytime a new one is started.
+By default `useFetcher` erases the `data` of a request anytime a new one is started.
 
 Most of the times this is what you want but there are cases where you want to keep the `data` visible to the user until new `data` are retrieved.  
 
@@ -173,7 +173,7 @@ Here an example showing how to keep `data` fetched on mount/update:
 
 ```
 const [data, setData] = useState()
-const [callback, [loading, error]] = useFetchCallback(fetcher)
+const [callback, [loading, error]] = useFetcher(fetcher)
 
 useEffect(()=>{
   callback().then((data)=>{
@@ -192,20 +192,20 @@ Sometimes you might want to change your request state manually.
 
 One common scenario when this can happen is if your user decides to ignore and remove a request error message displayed on the screen.
 
-`useFetchCallback` provides you `setLoading`, `setError`, `setData` and `setRequestState` for you to handle these use cases.
+`useFetcher` provides you `setLoading`, `setError`, `setData` and `setRequestState` for you to handle these use cases.
 
-Here the full signature of `useFetchCallback`:
+Here the full signature of `useFetcher`:
 
 ```
-const [callback, [loading, error, data], setRequestState] = useFetchCallback(fetcher)
+const [callback, [loading, error, data], setRequestState] = useFetcher(fetcher)
 const [setLoading, setError, setData] = setRequestState
 ```
 
 `setLoading`, `setError`, `setData` and `setRequestState` should be self explanatory because they work exactly like the setState in `const [state, setState] = useState()`
 
-### What exactly is useFetchCallback returning?
+### What exactly is useFetcher returning?
 
-`useFetchCallback` returns a `result` object shaped as follow:
+`useFetcher` returns a `result` object shaped as follow:
 
 ```
 {

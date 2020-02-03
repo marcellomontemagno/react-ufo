@@ -1,6 +1,6 @@
 import React, {useRef, useEffect, useState, useCallback} from 'react'
 import debounce from 'lodash.debounce'
-import {useFetchCallback} from "react-ufo"
+import {useFetcher} from "react-ufo"
 
 export const getBooks = async (title, signal) => {
   if (!title) return
@@ -19,7 +19,7 @@ const useDebounce = (fn, mills = 500) => {
 const DebounceFetchExample = () => {
 
   const [books, setBooks] = useState()
-  const [fetchBooks, [loading, error]] = useFetchCallback(getBooks)
+  const [fetchBooks, [loading, error]] = useFetcher(getBooks)
 
   const debouncedFetchBooks = useDebounce(
     useCallback(async (bookTitle) => {

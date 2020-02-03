@@ -1,7 +1,7 @@
 import {renderHook, act} from '@testing-library/react-hooks'
-import {useFetchCallback} from "../index"
+import {useFetcher} from "../index"
 
-describe(`useFetchCallback`, () => {
+describe(`useFetcher`, () => {
 
   describe(`given window.AbortController is not defined`, () => {
 
@@ -20,7 +20,7 @@ describe(`useFetchCallback`, () => {
           reject = rj
         })
       })
-      hook = renderHook(() => useFetchCallback(fetcher))
+      hook = renderHook(() => useFetcher(fetcher))
     })
 
     describe(`aborting the callback before invoking it`, () => {

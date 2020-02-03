@@ -1,11 +1,11 @@
 import React, {useCallback, useEffect, useState} from 'react'
-import {useFetchCallback} from "react-ufo"
+import {useFetcher} from "react-ufo"
 import * as api from "./fakeBookApi"
 
 const Example = ({bookId}) => {
 
-  const [readBook, [loading, error, book], [, , setBook]] = useFetchCallback(api.readBook, {loading: true})
-  const [updateBook, [updating, updatingError], [, setUpdatingError]] = useFetchCallback(api.updateBook)
+  const [readBook, [loading, error, book], [, , setBook]] = useFetcher(api.readBook, {loading: true})
+  const [updateBook, [updating, updatingError], [, setUpdatingError]] = useFetcher(api.updateBook)
   let [draftBook, setDraftBook] = useState()
 
   useEffect(() => {

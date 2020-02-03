@@ -1,8 +1,8 @@
 import {renderHook, act} from "@testing-library/react-hooks"
 import {useEffect} from "react"
-import {useFetchCallback} from "../index"
+import {useFetcher} from "../index"
 
-describe(`useFetchEffect, cascading`, () => {
+describe(`useFetcher, cascading`, () => {
 
   let fetcher1
   let resolveFetcher1
@@ -29,8 +29,8 @@ describe(`useFetchEffect, cascading`, () => {
       })
     })
     renderHook(() => {
-      result1 = useFetchCallback(fetcher1, {loading: true})
-      result2 = useFetchCallback(fetcher2, {loading: true})
+      result1 = useFetcher(fetcher1, {loading: true})
+      result2 = useFetcher(fetcher2, {loading: true})
       const [callback1] = result1
       const [callback2] = result2
       useEffect(() => {

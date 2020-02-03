@@ -1,7 +1,7 @@
 import {act, renderHook} from '@testing-library/react-hooks'
-import {useFetchCallback} from "../index"
+import {useFetcher} from "../index"
 
-describe(`useFetchCallback`, () => {
+describe(`useFetcher`, () => {
 
   let hook
   let fetcherArgs
@@ -24,7 +24,7 @@ describe(`useFetchCallback`, () => {
         reject = rj
       })
     })
-    hook = renderHook(() => useFetchCallback(fetcher))
+    hook = renderHook(() => useFetcher(fetcher))
   })
 
   it(`returns loading:false, error: null, data: null`, () => {

@@ -4,7 +4,7 @@ import useRequestState from "./useRequestState"
 import createControllablePromise from "./createControllablePromise"
 import createAbortController from "./createAbortController"
 
-const useFetchCallback = (fetcher, initialState = {}) => {
+const useFetcher = (fetcher, initialState = {}) => {
 
   const ignoredRef = useRef(false)
   const abortControllerRef = useRef(createAbortController())
@@ -59,4 +59,4 @@ const useFetchCallback = (fetcher, initialState = {}) => {
 
 }
 
-export default useFetchCallback
+export default useFetcher

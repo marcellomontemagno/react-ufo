@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useEffect} from 'react'
-import {useFetchCallback} from "react-ufo"
+import {useFetcher} from "react-ufo"
 
 const api = {
   getTodo: async (id, signal) => {
@@ -10,7 +10,7 @@ const api = {
 
 const Todo = ({id}) => {
 
-  const [getTodo, [loadingTodo, todoError, todo]] = useFetchCallback(api.getTodo)
+  const [getTodo, [loadingTodo, todoError, todo]] = useFetcher(api.getTodo)
 
   useEffect(() => {
     getTodo(id).then(() => undefined)

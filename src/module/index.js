@@ -1,3 +1,3 @@
-import useFetchCallback from "./useFetchCallback"
+import useFetcher from "./useFetcher"
 
-export {useFetchCallback}
+export {useFetcher}
