@@ -1,6 +1,6 @@
 {
   "name": "react-ufo",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "🛸 UFO - Use fetch orderly - A small collection of react hooks to help you handle data fetching with no fuss 🛸",
   "main": "./build/umd/umd.js",
   "react-scv": {
