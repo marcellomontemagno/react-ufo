@@ -17,7 +17,9 @@ const useFetcher = (fetcher, initialState = {}) => {
     const {signal} = abortControllerRef.current
     setRequestState({loading: true, error: null, data: null})
     fetcher(...args, signal).then((data) => {
-      resolve(data)
+      if (!ignoredRef.current && !signal.aborted) {
+        resolve(data)
+      }
       //gives the ability to set some state before loading is changed (useful in pessimistic update example)
       promise.then(() => {
         if (!ignoredRef.current && !signal.aborted) {
@@ -25,8 +27,8 @@ const useFetcher = (fetcher, initialState = {}) => {
         }
       })
     }).catch((error) => {
-      reject(error)
       if (error?.name !== 'AbortError' && !ignoredRef.current && !signal.aborted) {
+        reject(error)
         setRequestState({loading: false, error, data: null})
       }
     })

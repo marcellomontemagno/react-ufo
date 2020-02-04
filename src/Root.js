@@ -3,7 +3,6 @@ import FetchEffectExample from './examples/FetchEffectExample'
 import FetchCallbackExample from "./examples/FetchCallbackExample"
 import CascadingFetchesExample from "./examples/CascadingFetchesExample"
 import DebounceFetchExample from "./examples/DebounceFetchExample"
-import PessimisticAndUpdatesExample from "./examples/PessimisticUpdatesExample"
 import CrudExample2 from "./examples/CrudExample"
 
 const Root = () => {
@@ -11,10 +10,6 @@ const Root = () => {
     crud:
     <br/>
     <CrudExample2/>
-    <br/><br/><br/>
-    Pessimistic update example:
-    <br/>
-    <PessimisticAndUpdatesExample/>
     <br/><br/><br/>
     Debounce fetch example:
     <br/>

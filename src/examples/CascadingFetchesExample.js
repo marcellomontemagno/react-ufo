@@ -14,8 +14,8 @@ const api = {
 
 const Container = ({todoId}) => {
 
-  const [todoResource, , getTodo] = useFetcher(api.getTodo, {loading: true})
-  const [userResource, , getUser] = useFetcher(api.getUser, {loading: true})
+  const [getTodo, todoResource] = useFetcher(api.getTodo, {loading: true})
+  const [getUser, userResource] = useFetcher(api.getUser, {loading: true})
 
   useEffect(() => {
     getTodo(todoId).then((todo) => {
