@@ -4,7 +4,7 @@ import {useFetcher} from "react-ufo"
 
 export const getBooks = async (title, signal) => {
   if (!title) return
-  const response = await fetch('http://openlibrary.org/search.json?title=' + title + '&limit=5', {signal})
+  const response = await fetch('https://openlibrary.org/search.json?title=' + title + '&limit=5', {signal})
   return response.json()
 }
 

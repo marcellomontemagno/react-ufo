@@ -17,7 +17,7 @@ When updating a UI with data retrieved form a remote server a lot of things can 
 - you might want to abort pending requests in certain conditions
 - you might have to handle race conditions
 
-At a first sight these problem seems no big deal but things get out of control quite easily.
+At a first sight these problems seem no big deal but things get out of control quite easily.
 
 Taking advantage of react hooks `react-ufo` helps you dealing with all this complexity.
  
@@ -93,7 +93,7 @@ useEffect(()=>{
 },[id,callback])
 ```
 
-this ensure that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
+this ensures that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
 
 Here a basic example showing how to use `useFetcher` during mount/update [![Edit 2basicFetchOnMountAndUpdateExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/2basicfetchonmountandupdateexample-k7e1q?fontsize=14&hidenavigation=1&theme=dark)
  
@@ -142,14 +142,14 @@ Sometimes 2 requests depend on each other.
 
 Let's say that you fetched a `todo` object containing a `userId` field and you want to use `userId` to fetch a `user` object.
 
-Here how you can handle this use case with `useFetcher`:
+Here how you can handle this use case with `useFetcher`
 
 ```
 
 ...
 
-const [fetchTodo, [loadingTodo, todoError, todo]] = useFetcher(todoFetcher)
-const [fetchUser, [loadingUser, userError, user]] = useFetcher(userFetcher)
+const [fetchTodo, [loadingTodo, todoError, todo]] = useFetcher(todoFetcher, {loading:true})
+const [fetchUser, [loadingUser, userError, user]] = useFetcher(userFetcher, {loading:true})
 
 useEffect(()=>{
   fetchTodo(todoId).then((todo)=>{
@@ -222,7 +222,7 @@ Here an example showing how `useFetcher` can be used to implement a simple CRUD 
 Here the full useFetcher API
 
 ```
-const initialRequestState = {loading:false, error:null, data:false} //these are the default values if initialRequestState is not provided
+const initialRequestState = {loading:false, error:null, data:null} //these are the default values if initialRequestState is not provided
 const [callback, requestState, setRequestState] = useFetcher(fetcher, initialRequestState)
 const [loading, error, data] = requestState
 const [setLoading, setError, setData] = setRequestState
@@ -248,7 +248,7 @@ const [setLoading, setError, setData] = setRequestState
 }
 ``` 
 
-`result`, `requestState` and `setRequestState` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow:
+`result`, `requestState` and `setRequestState` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow
 
 ```
 const [callback, [loading, error, data], [setLoading, setError, setData]] = result

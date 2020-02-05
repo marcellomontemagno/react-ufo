@@ -43,9 +43,9 @@ const Example = () => {
   }
 
   const onBookDelete = (book) => {
+    setEditId(undefined);
     const bookId = book.id
     setBooks((books) => books.filter(({id}) => id !== bookId))
-    setEditId(undefined)
   }
 
   const onEditClick = (bookId) => {
