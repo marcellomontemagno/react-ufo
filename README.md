@@ -5,21 +5,21 @@
   <br/>
   UFO - Use fetch orderly
   <br/>
-  react-ufo helps you handle data fetching in react with no fuss
+  `react-ufo` helps you handle data fetching in React with no fuss
 </p>
 
 ## Introduction
 
-When updating a UI with data retrieved form a remote server a lot of things can go wrong
+When updating a UI with data retrieved from a remote server a lot of things can go wrong
 
-- you will need to handle `loading` and `error` state
-- you might have two or more requests depending on each others
-- you might want to abort pending requests in certain conditions
-- you might have to handle race conditions
+- You will need to handle `loading` and `error` state
+- You might have two or more requests depending on each other
+- You might want to abort pending requests in certain conditions
+- You might have to handle race conditions
 
-At a first sight these problems seem no big deal but things get out of control quite easily.
+At first sight, these problems seem no big deal but things get out of control quite easily.
 
-Taking advantage of react hooks `react-ufo` helps you dealing with all this complexity.
+Taking advantage of React hooks `react-ufo` helps you deal with all this complexity.
  
 ## Installation
 
@@ -63,7 +63,7 @@ By default, before a request is started, `useFetcher` will return `loading=false
 
 Sometimes you might want your initial request state to be different.
 
-One example is if you plan to request your data on the component mount/update, in this case you might want your initial request state to have `loading=true`.
+One example is if you plan to request your data on the component mount/update, in this case, you might want your initial request state to have `loading=true`.
     
 `useFetcher` can receive a second argument indicating the initial state before your request starts.
 
@@ -83,7 +83,7 @@ You don't have to worry about passing `callback` as a dependency of `useEffect`,
 
 ### Fetching on mount/update with props
 
-Sometimes a `fetcher` might need some data in order to retrieve data, for example the `getTodo` presented earlier needs an `id` argument.
+Sometimes a `fetcher` might need some data in order to retrieve data, for example, the `getTodo` presented earlier needs an `id` argument.
 
 Assuming `id` is a prop of your component all you need to do is
 
@@ -169,7 +169,7 @@ By default `useFetcher` erases the `data` of a request anytime a new one is star
 
 Most of the times this is what you want but there are cases where you want to keep the `data` visible to the user until new `data` are retrieved.  
 
-If you need to keep `data` between fetches you can simply use `useState` from react.
+If you need to keep `data` between fetches you can simply use `useState` from React.
 
 Here an example showing how to keep `data` while multiple request are pending:
 
@@ -190,7 +190,7 @@ const myEventCallback = ()=>{
 
 ``` 
 
-in the previous example `_data` is set to null anytime a new request is started while `data` is only valued when a request is completed.
+In the previous example `_data` is set to null anytime a new request is started while `data` is only valued when a request is completed.
 
 ### Debouncing requests
 
@@ -219,7 +219,7 @@ Here an example showing how `useFetcher` can be used to implement a simple CRUD 
 
 ### useFetcher API
 
-Here the full useFetcher API
+Here the full `useFetcher` API
 
 ```
 const initialRequestState = {loading:false, error:null, data:null} //these are the default values if initialRequestState is not provided
@@ -271,18 +271,18 @@ Note that even though `setRequestState` contains `setLoading`, `setError`, `setD
 
 ## Examples
 
-1) basic fetch in event callback [![Edit 1basicFetchInEventCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/1basicfetchineventcallbackexample-ocu87?fontsize=14&hidenavigation=1&theme=dark)
-2) basic fetch on mount/update [![Edit 2basicFetchOnMountAndUpdateExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/2basicfetchonmountandupdateexample-k7e1q?fontsize=14&hidenavigation=1&theme=dark)
-3) aborting a pending request [![Edit 3basicAbortFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/3basicabortfetchexample-kf591?fontsize=14&hidenavigation=1&theme=dark)
-4) handling requests depending on each others [![Edit 4cascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4cascadingfetchesexample-1148s?fontsize=14&hidenavigation=1&theme=dark)
-5) debouncing requests [![Edit 5debounceFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/5debouncefetchexample-mo18d?fontsize=14&hidenavigation=1&theme=dark)
-6) simple CRUD application [![Edit 6crudExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/6crudexample-ggp4o?fontsize=14&hidenavigation=1&theme=dark)
-7) aborting a pending request started with [axios](https://www.npmjs.com/package/axios) [![Edit abortRequestIfUsingAxiosExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/abortrequestifusingaxiosexample-fg8de?fontsize=14&hidenavigation=1&theme=dark)
+1) Basic fetch in event callback [![Edit 1basicFetchInEventCallbackExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/1basicfetchineventcallbackexample-ocu87?fontsize=14&hidenavigation=1&theme=dark)
+2) Basic fetch on mount/update [![Edit 2basicFetchOnMountAndUpdateExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/2basicfetchonmountandupdateexample-k7e1q?fontsize=14&hidenavigation=1&theme=dark)
+3) Aborting a pending request [![Edit 3basicAbortFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/3basicabortfetchexample-kf591?fontsize=14&hidenavigation=1&theme=dark)
+4) Handling requests depending on each others [![Edit 4cascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4cascadingfetchesexample-1148s?fontsize=14&hidenavigation=1&theme=dark)
+5) Debouncing requests [![Edit 5debounceFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/5debouncefetchexample-mo18d?fontsize=14&hidenavigation=1&theme=dark)
+6) Simple CRUD application [![Edit 6crudExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/6crudexample-ggp4o?fontsize=14&hidenavigation=1&theme=dark)
+7) Aborting a pending request started with [axios](https://www.npmjs.com/package/axios) [![Edit abortRequestIfUsingAxiosExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/abortrequestifusingaxiosexample-fg8de?fontsize=14&hidenavigation=1&theme=dark)
 
 ## Package versioning
 
 Breaking changes might be made between 0.x.x versions.
-Starting from version 1.0.0 every breaking changes will result in a major version update.
+Starting from version 1.0.0 every breaking change will result in a major version update.
 The [changelog](https://github.com/marcellomontemagno/react-ufo/releases) will give you details about every change between versions.
   
 ## Dependencies
