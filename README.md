@@ -41,7 +41,7 @@ A `fetcher` function is a normal function that fetches some data and returns a p
 
 Here an example of `fetcher` function: 
 
-```
+```js
 const getTodo = async (id) => {
   const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id);
   return response.json();
@@ -73,7 +73,7 @@ Here how you override the default `loading` state to be `true`
 
 Now if you want your request to start on mount all you need to do is
 
-```
+```js
 useEffect(()=>{
   callback()
 },[callback])
@@ -87,7 +87,7 @@ Sometimes a `fetcher` might need some data in order to retrieve data, for exampl
 
 Assuming `id` is a prop of your component all you need to do is
 
-```
+```js
 useEffect(()=>{
   callback(id)
 },[id,callback])
@@ -119,7 +119,7 @@ In order for `callback.abort()` to work you'll need to pass the abort signal to 
 
 Here an example showing how to enable fetch abortion on the `getTodo` `fetcher` presented earlier
 
-```
+```js
 const getTodo = async (id, signal) => {
   const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id, {signal});
   return response.json();
@@ -144,7 +144,7 @@ Let's say that you fetched a `todo` object containing a `userId` field and you w
 
 Here how you can handle this use case with `useFetcher`
 
-```
+```js
 
 ...
 
@@ -173,7 +173,7 @@ If you need to keep `data` between fetches you can simply use `useState` from Re
 
 Here an example showing how to keep `data` while multiple request are pending:
 
-```
+```js
 const [data, setData] = useState()
 const [callback, [loading, error, _data]] = useFetcher(fetcher)
 
@@ -206,7 +206,7 @@ One common scenario when this can happen is if your user decides to ignore and r
 
 Here the full signature of `useFetcher`:
 
-```
+```js
 const [callback, [loading, error, data], setRequestState] = useFetcher(fetcher)
 const [setLoading, setError, setData] = setRequestState
 ```
@@ -221,7 +221,7 @@ Here an example showing how `useFetcher` can be used to implement a simple CRUD 
 
 Here the full `useFetcher` API
 
-```
+```js
 const initialRequestState = {loading:false, error:null, data:null} //these are the default values if initialRequestState is not provided
 const [callback, requestState, setRequestState] = useFetcher(fetcher, initialRequestState)
 const [loading, error, data] = requestState
@@ -232,7 +232,7 @@ const [setLoading, setError, setData] = setRequestState
 
 `useFetcher` returns a `result` object shaped as follow:
 
-```
+```js
 {
   callback,
   requestState: {
@@ -250,13 +250,13 @@ const [setLoading, setError, setData] = setRequestState
 
 `result`, `requestState` and `setRequestState` are also iterable, therefore, if you find it convenient for renaming, you can destructure them into an array as follow
 
-```
+```js
 const [callback, [loading, error, data], [setLoading, setError, setData]] = result
 ```
 
 When destructuring into an array you obviously need to rely on the order we specified for each key, therefore, in case you don't want to extract all the fields from `result`, you might need to write something like the following:
 
-```
+```js
 const [callback, [loading, , data], [, setError]] = result
 ```
 
