@@ -5,22 +5,22 @@
   <br/>
   UFO - Use fetch orderly
   <br/>
-  `react-ufo` helps you handle data fetching in React with no fuss
+  A simple React hook to help you with data fetching
 </p>
 
 ## Introduction
 
-When updating a UI with data retrieved from a remote server a lot of things can go wrong
+[Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) and [Axios](https://www.npmjs.com/package/axios) help you fetching data but when you need to link the status of a request to your React state you are on your own.
 
-- You will need to handle `loading` and `error` state
-- You might have two or more requests depending on each other
-- You might want to abort pending requests in certain conditions
-- You might have to handle race conditions
-
-At first sight, these problems seem no big deal but things get out of control quite easily.
-
-Taking advantage of React hooks `react-ufo` helps you deal with all this complexity.
+Handling the UI state related to a request can be repetitive and error-prone, especially if you have to
  
+- handle related requests within the same component
+- ignore requests results after your component is unmounted
+- abort requests in certain conditions
+- handle race conditions
+
+Taking advantage of React hooks `react-ufo` helps you deal with this complexity.
+
 ## Installation
 
 `npm install --save react-ufo`
@@ -96,45 +96,6 @@ useEffect(()=>{
 this ensures that your `fetcher` will be invoked on mount and anytime `id` updates, which is usually what you want. 
 
 Here a basic example showing how to use `useFetcher` during mount/update [![Edit 2basicFetchOnMountAndUpdateExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/2basicfetchonmountandupdateexample-k7e1q?fontsize=14&hidenavigation=1&theme=dark)
- 
-### Ignoring a pending request
-
-If your component is unmounted while one of its requests is still pending `useFetcher` will take care of ignoring its result avoiding an attempt to perform a `setState` on an unmounted component.
-
-Sometimes you might want to ignore the result of a request for other reasons too.
-
-`callback.ignore()` can be invoked if you need to ignore the result of a pending request.
-
-If a pending request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed.
- 
-### Aborting a pending request
-
-`callback.abort()` can be invoked anytime you want to abort a pending request.
-
-Unfortunately in order for `callback.abort()` to work properly there is some little more wiring that you'll need to do.
-
-`useFetcher` will take care of passing an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to your `fetcher` as its last argument.
-
-In order for `callback.abort()` to work you'll need to pass the abort signal to your [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
-
-Here an example showing how to enable fetch abortion on the `getTodo` `fetcher` presented earlier
-
-```js
-const getTodo = async (id, signal) => {
-  const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id, {signal});
-  return response.json();
-};
-```
-
-If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be marked as ignored.
- 
-If a request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed. 
- 
-Here an example showing how to abort a request [![Edit 3basicAbortFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/3basicabortfetchexample-kf591?fontsize=14&hidenavigation=1&theme=dark)
-
-Aborting a pending request is quite easy when using [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) but it can also be achieved if you are using other libraries such as [axios](https://www.npmjs.com/package/axios)
-
-If you are wondering how to abort a request started by [axios](https://www.npmjs.com/package/axios) instead of [fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) you can find an example here [![Edit abortRequestIfUsingAxiosExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/abortrequestifusingaxiosexample-fg8de?fontsize=14&hidenavigation=1&theme=dark) 
 
 ### Cascading fetches
 
@@ -162,6 +123,45 @@ useEffect(()=>{
 ```
 
 Here the full example showing this use case [![Edit 4cascadingFetchesExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/4cascadingfetchesexample-1148s?fontsize=14&hidenavigation=1&theme=dark)
+ 
+### Ignoring a pending request
+
+If your component is unmounted while one of its requests is still pending `useFetcher` will take care of ignoring its result avoiding an attempt to perform a `setState` on an unmounted component.
+
+Sometimes you might want to ignore the result of a request for other reasons too.
+
+`callback.ignore()` can be invoked if you need to ignore the result of a pending request.
+
+If a pending request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed.
+ 
+### Aborting a pending request
+
+`callback.abort()` can be invoked anytime you want to abort a pending request.
+
+Unfortunately in order for `callback.abort()` to work properly there is some little more wiring that you'll need to do.
+
+`useFetcher` will take care of passing an [abort signal](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) to your `fetcher` as its last argument.
+
+In order for `callback.abort()` to work you'll need to pass the abort signal to your [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
+
+Here an example showing how to enable fetch abortion on the `getTodo` `fetcher` presented earlier
+
+```js
+const getTodo = async (id, signal) => {
+  const response = await fetch("https://jsonplaceholder.typicode.com/todos/" + id, {signal});
+  return response.json();
+};
+```
+
+If your fetcher is not passing the `abort signal` to `fetch API` invoking `callback.abort()` will not abort the request but the request will still be marked as ignored.
+ 
+If a request is marked as ignored `loading`, `error` and `data` will not be updated once the request is completed. 
+ 
+Here an example showing how to abort a request [![Edit 3basicAbortFetchExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/3basicabortfetchexample-kf591?fontsize=14&hidenavigation=1&theme=dark)
+
+Aborting a pending request is quite easy when using [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) but it can also be achieved if you are using other libraries such as [axios](https://www.npmjs.com/package/axios)
+
+If you are wondering how to abort a request started by [Axios](https://www.npmjs.com/package/axios) instead of [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) you can find an example here [![Edit abortRequestIfUsingAxiosExample](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/abortrequestifusingaxiosexample-fg8de?fontsize=14&hidenavigation=1&theme=dark) 
 
 ### Keeping state between fetches
 
